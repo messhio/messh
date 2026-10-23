@@ -4,7 +4,7 @@ Names (checked 2026-10-22):
 
 | Registry | Name | Install | Status |
 |---|---|---|---|
-| npm | `@messh/sdk` | `npm install @messh/sdk` | the npm org `messh` exists (2026-10-23) |
+| npm | `@messh/sdk` | `npm install @messh/sdk` | published: 0.1.0 with provenance (2026-10-23) |
 | PyPI | `messh-sdk` (import `messh`) | `pip install messh-sdk` | `messh` is taken (an SSH config tool, last release 2019); `messh-sdk` is free |
 | crates.io | `messh` | `cargo add messh` | free |
 | Maven Central | `io.messh:messh-sdk` | `implementation("io.messh:messh-sdk:0.1.0")` | free; needs DNS proof of messh.io |

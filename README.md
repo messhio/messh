@@ -6,13 +6,14 @@ This repo is the open-source part of [messh.io](https://messh.io): the `messh` C
 HTTP requests as a messh identity (Web Bot Auth: RFC 9421 HTTP Message Signatures with Ed25519), and the
 conformance vectors they share.
 
-> **Preview.** The hosted registry at messh.io isn't live yet, and the SDK packages aren't on their registries yet.
+> **Preview.** The registry at [messh.io](https://messh.io) is live. Of the SDKs, only the JS / TS one is published so far
+> ([`@messh/sdk`](https://www.npmjs.com/package/@messh/sdk) on npm); the others build from `sdk/` for now.
 
 ## CLI
 
 ```sh
 brew install messhio/tap/messh
-curl -fsSL https://messh.io/install.sh | sh    # once messh.io is live
+curl -fsSL https://messh.io/install.sh | sh
 ```
 
 ```text
