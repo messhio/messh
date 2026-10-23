@@ -1,0 +1,38 @@
+[package]
+name = "messh"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+# Resolve Cargo.lock to dependency versions that still build on rust-version.
+resolver = "3"
+description = "Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)"
+license = "Apache-2.0"
+authors = ["Mukul Lohar"]
+homepage = "https://messh.io"
+repository = "https://github.com/messhio/messh"
+documentation = "https://docs.rs/messh"
+readme = "README.md"
+keywords = ["web-bot-auth", "rfc9421", "http-signatures", "ed25519", "messh"]
+categories = ["cryptography", "authentication", "web-programming::http-client"]
+# Tests read ../../spec/vectors, which isn't in the crate; ship library code only.
+include = ["src/**/*.rs", "examples/**/*.rs", "Cargo.toml", "README.md", "LICENSE"]
+
+[features]
+default = ["fetch"]
+# Fetch key directories (verifier) and send signed requests (client) with ureq.
+fetch = ["dep:ureq"]
+# Helpers for http::Request.
+http = ["dep:http"]
+
+[dependencies]
+base64 = "0.22"
+ed25519-dalek = { version = "2.1", features = ["pkcs8", "pem"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+getrandom = "0.2"
+ureq = { version = "2.9", optional = true, default-features = false, features = ["tls"] }
+http = { version = "1", optional = true }
+
+[dev-dependencies]
+http = "1"

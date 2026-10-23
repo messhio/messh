@@ -1,0 +1,7 @@
+node_modules/
+target/
+dist/
+*.tsbuildinfo
+__pycache__/
+*.egg-info/
+.DS_Store

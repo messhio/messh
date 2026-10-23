@@ -1,0 +1,57 @@
+{
+  "name": "@messh/sdk",
+  "version": "0.1.0",
+  "description": "Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)",
+  "license": "Apache-2.0",
+  "author": "Mukul Lohar",
+  "homepage": "https://messh.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/messhio/messh.git",
+    "directory": "sdk/ts"
+  },
+  "bugs": {
+    "url": "https://github.com/messhio/messh/issues"
+  },
+  "keywords": [
+    "messh",
+    "web-bot-auth",
+    "rfc9421",
+    "http-message-signatures",
+    "ed25519",
+    "agents"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./verify": {
+      "types": "./dist/verify.d.ts",
+      "import": "./dist/verify.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

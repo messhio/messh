@@ -1,0 +1,73 @@
+# Checks every push to main and every pull request: the CLI, the five SDKs,
+# and that spec/vectors is exactly what its reference implementation writes.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.26", cache-dependency-path: "**/go.sum" }
+      - name: vet and test
+        working-directory: cli
+        run: go vet ./... && go test -race ./...
+
+  vectors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.26", cache-dependency-path: spec/vectors/gen/go.sum }
+      - name: reference implementation, and spec/vectors is what it writes
+        working-directory: spec/vectors/gen
+        env: { GOWORK: "off" }
+        run: |
+          go vet ./... && go test ./...
+          go run . "$RUNNER_TEMP/v"
+          # go test checks test_ed25519: its OpenSSH encoding has random check bytes, so it differs on every run.
+          for f in test_ed25519.pub test_ed25519.pkcs8.pem web-bot-auth.json; do cmp "$RUNNER_TEMP/v/$f" "../$f"; done
+
+  sdks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.22", cache-dependency-path: sdk/go/go.sum }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: sdk/ts/package-lock.json }
+      - uses: dtolnay/rust-toolchain@1.85   # sdk/rs rust-version; stable below stays the default
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: clippy }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21", cache: maven }
+      - name: go
+        working-directory: sdk/go
+        env: { GOWORK: "off" }   # the SDK alone, on its minimum Go, not the repo's go.work
+        run: go vet ./... && go test ./...
+      - name: python
+        working-directory: sdk/py
+        run: pip install . "fastapi>=0.100" && python -m unittest discover -s tests
+      - name: ts
+        working-directory: sdk/ts
+        run: npm ci && npm test
+      - name: rust
+        working-directory: sdk/rs
+        run: cargo +1.85 check --all-features --all-targets --locked && cargo test --all-features && cargo clippy --all-features --all-targets -- -D warnings
+      - name: java
+        working-directory: sdk/java
+        run: mvn -B test

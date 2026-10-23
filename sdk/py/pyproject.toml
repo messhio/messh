@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Distribution name on PyPI; the import name is `messh` (`messh` on PyPI is taken).
+name = "messh-sdk"
+version = "0.1.0"
+description = "Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Mukul Lohar" }]
+keywords = ["messh", "web-bot-auth", "rfc9421", "http-message-signatures", "ed25519", "agents"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Security :: Cryptography",
+  "Topic :: Internet :: WWW/HTTP",
+  "Typing :: Typed",
+]
+dependencies = ["cryptography>=41"]
+
+[project.optional-dependencies]
+httpx = ["httpx>=0.24"]
+requests = ["requests>=2.28"]
+fastapi = ["starlette>=0.27"]
+
+[project.urls]
+Homepage = "https://messh.io"
+Documentation = "https://github.com/messhio/messh/blob/main/sdk/README.md#python-messh-sdk-import-messh"
+Source = "https://github.com/messhio/messh/tree/main/sdk/py"
+Issues = "https://github.com/messhio/messh/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+messh = ["py.typed"]
