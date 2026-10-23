@@ -1,8 +1,8 @@
 # Publish all five SDKs when a tag like sdk-v0.1.0 is pushed, or one registry at a time by hand
 # (Actions → release-sdks → Run workflow), for while the others aren't set up yet.
 # One-time setup (see sdk/PUBLISHING.md): secrets NPM_TOKEN, CARGO_REGISTRY_TOKEN,
-# MAVEN_CENTRAL_USERNAME, MAVEN_CENTRAL_PASSWORD, MAVEN_GPG_PRIVATE_KEY, MAVEN_GPG_PASSPHRASE,
-# GO_MIRROR_DEPLOY_KEY; PyPI trusted publisher for this workflow (environment "pypi").
+# MAVEN_CENTRAL_USERNAME, MAVEN_CENTRAL_PASSWORD, MAVEN_GPG_PRIVATE_KEY, MAVEN_GPG_PASSPHRASE;
+# PyPI trusted publisher for this workflow (environment "pypi"). Go needs nothing.
 name: release-sdks
 
 on:
@@ -129,28 +129,26 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
   go:
-    # messh.io/go/messh resolves to github.com/messhio/messh-go (the go-import page messh.io serves);
-    # push sdk/go there as the repo root and tag it vX.Y.Z.
+    # messh.io/go/messh is the sdk/go directory of this repo (the go-import page messh.io serves says so, with
+    # Go 1.25's subdirectory field), so a release is the tag sdk/go/vX.Y.Z here.
     if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'go'
     needs: [version, test]
     runs-on: ubuntu-latest
+    permissions: { contents: write }   # push the tag
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
       - uses: actions/setup-go@v5
-        with: { go-version: "1.22" }
-      - name: push sdk/go to messhio/messh-go
+        with: { go-version: stable }
+      - name: tag sdk/go/vX.Y.Z
         env:
-          DEPLOY_KEY: ${{ secrets.GO_MIRROR_DEPLOY_KEY }}
           VERSION: ${{ needs.version.outputs.version }}
         run: |
-          mkdir -p ~/.ssh && printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/go_mirror && chmod 600 ~/.ssh/go_mirror
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          export GIT_SSH_COMMAND="ssh -i ~/.ssh/go_mirror -o IdentitiesOnly=yes"
-          git subtree split --prefix sdk/go -b go-release
-          git push git@github.com:messhio/messh-go.git go-release:main --force
-          git tag "v$VERSION" go-release
-          git push git@github.com:messhio/messh-go.git "v$VERSION"
+          tag="sdk/go/v$VERSION"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "$tag already exists"
+          else
+            git tag "$tag" "$GITHUB_SHA" && git push origin "refs/tags/$tag"
+          fi
       - name: announce to the Go module proxy
         env:
           VERSION: ${{ needs.version.outputs.version }}

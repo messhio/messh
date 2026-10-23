@@ -8,19 +8,17 @@ Names (checked 2026-10-22):
 | PyPI | `messh-sdk` (import `messh`) | `pip install messh-sdk` | `messh` is taken (an SSH config tool, last release 2019); `messh-sdk` is free |
 | crates.io | `messh` | `cargo add messh` | free |
 | Maven Central | `io.messh:messh-sdk` | `implementation("io.messh:messh-sdk:0.1.0")` | free; needs DNS proof of messh.io |
-| Go | `messh.io/go/messh` | `go get messh.io/go/messh` | served from `github.com/messhio/messh-go`; the web app's `/go/messh` route serves the import path |
+| Go | `messh.io/go/messh` | `go get messh.io/go/messh` | the `sdk/go` directory of this repo, tagged `sdk/go/vX.Y.Z`; messh.io's `/go/messh` page points Go there |
 
 The source repo is `github.com/messhio/messh`: this repo, the CLI and the SDKs.
 
 ## One-time setup (≈ 1 hour, mostly waiting on emails and DNS)
 
-1. **GitHub** (done): the org `messhio` has `messh` (this repo) and `messh-go` (empty; the release workflow fills it).
-2. **Go mirror deploy key** (the `messhio` org has deploy keys turned off: an org owner turns them on in the
-   organization's settings first):
-   - Run `ssh-keygen -t ed25519 -f go_mirror -N ''`.
-   - Add `go_mirror.pub` to `messhio/messh-go` → Settings → Deploy keys, with **write access**.
-   - Save `go_mirror` (the private key) as the secret `GO_MIRROR_DEPLOY_KEY` in `messhio/messh`.
-3. **Go vanity URL:** nothing to deploy once the app runs at `https://messh.io`: the web app (`messhio/messh-app`) serves the go-import page at `/go/messh` (and `/go/messh/verify`). Until then, or if messh.io is served from somewhere else, deploy the static copy in messh-app's `site/` instead, for example to Cloudflare Pages. Check it with `curl -s 'https://messh.io/go/messh?go-get=1' | grep go-import`.
+1. **GitHub** (done): the org `messhio` has `messh`, this repo.
+2. **Go:** nothing to set up. The module is `sdk/go` in this repo: the go-import page names the directory (a field
+   Go 1.25 added; every supported Go reads it, and older ones fetch through proxy.golang.org, which does), so a
+   release is just the tag `sdk/go/vX.Y.Z`.
+3. **Go vanity URL** (live since 2026-10-23): nothing to deploy while the app runs at `https://messh.io`: the web app (`messhio/messh-app`) serves the go-import page at `/go/messh` (and `/go/messh/verify`). Until then, or if messh.io is served from somewhere else, deploy the static copy in messh-app's `site/` instead, for example to Cloudflare Pages. Check it with `curl -s 'https://messh.io/go/messh?go-get=1' | grep go-import`.
 4. **npm** (the org `messh` exists):
    - npmjs.com → your avatar → **Access Tokens** → **Generate New Token** → **Granular Access Token**.
      Packages and scopes: **Read and write**, scope `@messh`. Tick **Bypass two-factor authentication**, so CI can
@@ -68,7 +66,7 @@ after the same tests.
    - PyPI, through trusted publishing
    - crates.io
    - Maven Central: signed, plus sources and javadoc jars
-   - Go: pushes `sdk/go` to `messhio/messh-go`, tags `v0.1.0`, and pings proxy.golang.org
+   - Go: tags `sdk/go/v0.1.0` here and asks proxy.golang.org to fetch it
 
 **To bump the version**, change it in all of these, and `check-version.sh` will tell you if you missed one:
 - `sdk/go/client.go`
@@ -109,7 +107,7 @@ The CLI and the SDKs have separate version numbers.
 | PyPI | `python -m build && twine check` | wheel + sdist PASSED, SPDX `Apache-2.0`, no warnings |
 | crates.io | `cargo publish --dry-run` | packages, verifies and stops at the upload step |
 | Maven | `mvn -P release package -Dgpg.skip` | jar + sources + javadoc |
-| Go | module tested on its own (as in `messh-go`) | `go vet` + `go test` pass |
+| Go | module tested on its own (`GOWORK=off`) | `go vet` + `go test` pass |
 
 ## Before the first public release
 
