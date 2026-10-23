@@ -4,7 +4,7 @@ Names (checked 2026-10-22):
 
 | Registry | Name | Install | Status |
 |---|---|---|---|
-| npm | `@messh/sdk` | `npm install @messh/sdk` | free: create the npm org `messh` |
+| npm | `@messh/sdk` | `npm install @messh/sdk` | the npm org `messh` exists (2026-10-23) |
 | PyPI | `messh-sdk` (import `messh`) | `pip install messh-sdk` | `messh` is taken (an SSH config tool, last release 2019); `messh-sdk` is free |
 | crates.io | `messh` | `cargo add messh` | free |
 | Maven Central | `io.messh:messh-sdk` | `implementation("io.messh:messh-sdk:0.1.0")` | free; needs DNS proof of messh.io |
@@ -21,9 +21,13 @@ The source repo is `github.com/messhio/messh`: this repo, the CLI and the SDKs.
    - Add `go_mirror.pub` to `messhio/messh-go` → Settings → Deploy keys, with **write access**.
    - Save `go_mirror` (the private key) as the secret `GO_MIRROR_DEPLOY_KEY` in `messhio/messh`.
 3. **Go vanity URL:** nothing to deploy once the app runs at `https://messh.io`: the web app (`messhio/messh-app`) serves the go-import page at `/go/messh` (and `/go/messh/verify`). Until then, or if messh.io is served from somewhere else, deploy the static copy in messh-app's `site/` instead, for example to Cloudflare Pages. Check it with `curl -s 'https://messh.io/go/messh?go-get=1' | grep go-import`.
-4. **npm:**
-   - Create an account with 2FA, then go to npmjs.com → **Add Organization** → `messh` (free, public).
-   - Create an *Automation* access token and save it as the secret `NPM_TOKEN`.
+4. **npm** (the org `messh` exists):
+   - npmjs.com → your avatar → **Access Tokens** → **Generate New Token** → **Granular Access Token**.
+     Packages and scopes: **Read and write**, scope `@messh`. Tick **Bypass two-factor authentication**, so CI can
+     publish. npm caps write tokens at 90 days, so note when it expires.
+   - Save it as the secret `NPM_TOKEN` in `messhio/messh` (Settings → Secrets and variables → Actions).
+   - After the first publish you can drop the token: on npmjs.com, `@messh/sdk` → Settings → **Trusted Publisher** →
+     GitHub Actions, `messhio/messh`, workflow `release-sdks.yml`.
 5. **PyPI:** create an account with 2FA, then go to **Publishing → Add a pending publisher**:
 
    | Field | Value |
@@ -51,6 +55,10 @@ The source repo is `github.com/messhio/messh`: this repo, the CLI and the SDKs.
 ./sdk/check-version.sh             # prints the version; fails if any package differs
 git tag sdk-v0.1.0 && git push origin sdk-v0.1.0
 ```
+
+Until every registry is set up, publish one at a time: Actions → release-sdks → Run workflow, and pick the registry
+(`gh workflow run release-sdks.yml -R messhio/messh -f registry=npm`). It publishes the version in the package files
+after the same tests.
 
 `.github/workflows/release-sdks.yml` then:
 1. Checks that the tag matches all five versions.

@@ -1,4 +1,5 @@
-# Publish all five SDKs when a tag like sdk-v0.1.0 is pushed.
+# Publish all five SDKs when a tag like sdk-v0.1.0 is pushed, or one registry at a time by hand
+# (Actions → release-sdks → Run workflow), for while the others aren't set up yet.
 # One-time setup (see sdk/PUBLISHING.md): secrets NPM_TOKEN, CARGO_REGISTRY_TOKEN,
 # MAVEN_CENTRAL_USERNAME, MAVEN_CENTRAL_PASSWORD, MAVEN_GPG_PRIVATE_KEY, MAVEN_GPG_PASSPHRASE,
 # GO_MIRROR_DEPLOY_KEY; PyPI trusted publisher for this workflow (environment "pypi").
@@ -7,6 +8,12 @@ name: release-sdks
 on:
   push:
     tags: ["sdk-v*"]
+  workflow_dispatch:
+    inputs:
+      registry:
+        description: Where to publish the version in the package files
+        type: choice
+        options: [npm, pypi, crates, maven, go, all]
 
 permissions:
   contents: read
@@ -19,7 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: v
-        run: echo "version=$(./sdk/check-version.sh "${GITHUB_REF_NAME#sdk-v}")" >> "$GITHUB_OUTPUT"
+        run: |
+          # A tag must match every package; a manual run publishes the version they all have.
+          if [ "$GITHUB_EVENT_NAME" = push ]; then v=$(./sdk/check-version.sh "${GITHUB_REF_NAME#sdk-v}"); else v=$(./sdk/check-version.sh); fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
 
   test:
     needs: version
@@ -54,6 +64,7 @@ jobs:
         run: mvn -B test
 
   npm:
+    if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'npm'
     needs: [version, test]
     runs-on: ubuntu-latest
     permissions: { contents: read, id-token: write }   # npm provenance
@@ -62,11 +73,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "22", registry-url: "https://registry.npmjs.org" }
       - working-directory: sdk/ts
-        run: npm ci && npm publish
+        run: |
+          [ -n "$NODE_AUTH_TOKEN" ] || { echo "::error::Set the NPM_TOKEN secret: an npm granular access token that can publish to @messh (sdk/PUBLISHING.md)"; exit 1; }
+          npm ci && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   pypi:
+    if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'pypi'
     needs: [version, test]
     runs-on: ubuntu-latest
     environment: pypi
@@ -81,6 +95,7 @@ jobs:
         with: { packages-dir: sdk/py/dist }
 
   crates:
+    if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'crates'
     needs: [version, test]
     runs-on: ubuntu-latest
     steps:
@@ -92,6 +107,7 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
   maven:
+    if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'maven'
     needs: [version, test]
     runs-on: ubuntu-latest
     steps:
@@ -115,6 +131,7 @@ jobs:
   go:
     # messh.io/go/messh resolves to github.com/messhio/messh-go (the go-import page messh.io serves);
     # push sdk/go there as the repo root and tag it vX.Y.Z.
+    if: github.event_name == 'push' || inputs.registry == 'all' || inputs.registry == 'go'
     needs: [version, test]
     runs-on: ubuntu-latest
     steps:
