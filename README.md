@@ -6,9 +6,10 @@ This repo is the open-source part of [messh.io](https://messh.io): the `messh` C
 HTTP requests as a messh identity (Web Bot Auth: RFC 9421 HTTP Message Signatures with Ed25519), and the
 conformance vectors they share.
 
-> **Preview.** The registry at [messh.io](https://messh.io) is live. Two SDKs are published so far: JS / TS
-> ([`@messh/sdk`](https://www.npmjs.com/package/@messh/sdk) on npm) and Go
-> ([`messh.io/go/messh`](https://pkg.go.dev/messh.io/go/messh)); the others build from `sdk/` for now.
+> **Preview.** The registry at [messh.io](https://messh.io) is live. Three SDKs are published so far: JS / TS
+> ([`@messh/sdk`](https://www.npmjs.com/package/@messh/sdk) on npm), Go
+> ([`messh.io/go/messh`](https://pkg.go.dev/messh.io/go/messh)) and Rust ([`messh`](https://crates.io/crates/messh) on
+> crates.io); Python and Java build from `sdk/` for now.
 
 ## CLI
 

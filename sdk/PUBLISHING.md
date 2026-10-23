@@ -6,7 +6,7 @@ Names (checked 2026-10-22):
 |---|---|---|---|
 | npm | `@messh/sdk` | `npm install @messh/sdk` | published: 0.1.0 with provenance (2026-10-23) |
 | PyPI | `messh-sdk` (import `messh`) | `pip install messh-sdk` | `messh` is taken (an SSH config tool, last release 2019); `messh-sdk` is free |
-| crates.io | `messh` | `cargo add messh` | free |
+| crates.io | `messh` | `cargo add messh` | published: 0.1.0 (2026-10-23) |
 | Maven Central | `io.messh:messh-sdk` | `implementation("io.messh:messh-sdk:0.1.0")` | free; needs DNS proof of messh.io |
 | Go | `messh.io/go/messh` | `go get messh.io/go/messh` | published: v0.1.0 (2026-10-23), the `sdk/go` directory of this repo, tagged `sdk/go/vX.Y.Z`; messh.io's `/go/messh` page points Go there |
 
