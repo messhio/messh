@@ -8,7 +8,7 @@ Names (checked 2026-10-22):
 | PyPI | `messh-sdk` (import `messh`) | `pip install messh-sdk` | `messh` is taken (an SSH config tool, last release 2019); `messh-sdk` is free |
 | crates.io | `messh` | `cargo add messh` | free |
 | Maven Central | `io.messh:messh-sdk` | `implementation("io.messh:messh-sdk:0.1.0")` | free; needs DNS proof of messh.io |
-| Go | `messh.io/go/messh` | `go get messh.io/go/messh` | the `sdk/go` directory of this repo, tagged `sdk/go/vX.Y.Z`; messh.io's `/go/messh` page points Go there |
+| Go | `messh.io/go/messh` | `go get messh.io/go/messh` | published: v0.1.0 (2026-10-23), the `sdk/go` directory of this repo, tagged `sdk/go/vX.Y.Z`; messh.io's `/go/messh` page points Go there |
 
 The source repo is `github.com/messhio/messh`: this repo, the CLI and the SDKs.
 
