@@ -1,7 +1,7 @@
 # Publish the messh CLI when a tag like cli-v0.1.0 is pushed: macOS and Linux binaries (amd64, arm64) and
 # SHA256SUMS on a GitHub Release, then the Homebrew formula in messhio/homebrew-tap. messh.io's install.sh
 # serves the same files. One-time setup (see sdk/PUBLISHING.md): the secret TAP_DEPLOY_KEY, a deploy key
-# with write access to messhio/homebrew-tap.
+# with write access to messhio/homebrew-tap. Without it the tap step is skipped with a warning.
 name: release-cli
 
 on:
@@ -38,6 +38,10 @@ jobs:
       - name: Homebrew formula in messhio/homebrew-tap
         env: { TAP_DEPLOY_KEY: "${{ secrets.TAP_DEPLOY_KEY }}" }
         run: |
+          if [ -z "$TAP_DEPLOY_KEY" ]; then
+            echo "::warning::TAP_DEPLOY_KEY is not set, so messhio/homebrew-tap was not updated. Write Formula/messh.rb with cli/release/formula.sh and push it by hand (sdk/PUBLISHING.md)."
+            exit 0
+          fi
           mkdir -p ~/.ssh && printf '%s\n' "$TAP_DEPLOY_KEY" > ~/.ssh/tap && chmod 600 ~/.ssh/tap
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/tap -o IdentitiesOnly=yes"

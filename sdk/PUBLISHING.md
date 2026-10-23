@@ -15,7 +15,8 @@ The source repo is `github.com/messhio/messh`: this repo, the CLI and the SDKs.
 ## One-time setup (≈ 1 hour, mostly waiting on emails and DNS)
 
 1. **GitHub** (done): the org `messhio` has `messh` (this repo) and `messh-go` (empty; the release workflow fills it).
-2. **Go mirror deploy key:**
+2. **Go mirror deploy key** (the `messhio` org has deploy keys turned off: an org owner turns them on in the
+   organization's settings first):
    - Run `ssh-keygen -t ed25519 -f go_mirror -N ''`.
    - Add `go_mirror.pub` to `messhio/messh-go` → Settings → Deploy keys, with **write access**.
    - Save `go_mirror` (the private key) as the secret `GO_MIRROR_DEPLOY_KEY` in `messhio/messh`.
@@ -81,7 +82,15 @@ attaches the four binaries and `SHA256SUMS` to a GitHub Release, and writes `For
 `messhio/homebrew-tap`, so `brew install messhio/tap/messh` installs it. messh.io's `install.sh` serves the same
 files: the API image downloads the release named by `CLI_VERSION` in messh-app's `deploy/.env`.
 
-One-time setup (done): the secret `TAP_DEPLOY_KEY`, a deploy key with write access to `messhio/homebrew-tap`.
+One-time setup: the secret `TAP_DEPLOY_KEY`, a deploy key with write access to `messhio/homebrew-tap` (deploy keys
+must be turned on for the org first). Until it's set, the workflow skips the tap with a warning; update it by hand
+from a clone of `messhio/homebrew-tap`:
+
+```sh
+curl -fsSLO https://github.com/messhio/messh/releases/download/cli-v0.1.0/SHA256SUMS
+/path/to/messh/cli/release/formula.sh 0.1.0 SHA256SUMS > Formula/messh.rb   # then commit and push
+```
+
 The CLI and the SDKs have separate version numbers.
 
 ## Checked locally (no upload)
