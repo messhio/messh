@@ -1,4 +1,4 @@
-// Command messh is the messh CLI: login, publish, resolve, verify, add,
+// Command messh is the messh CLI: init, login, publish, resolve, verify, add,
 // remove, sync and key management.
 package main
 
@@ -29,6 +29,8 @@ var version = "dev"
 const usage = `messh: your name, your keys.
 
 Usage:
+  messh init [--key F] [--name N] [--agent A]... [--yes]
+                                      set up: sign in, publish a key, test a signed request
   messh login                         sign in (device code)
   messh logout
   messh publish [--key F] [--name N] [--agent A]...
@@ -52,7 +54,7 @@ func main() {
 		os.Exit(2)
 	}
 	cmds := map[string]func([]string) error{
-		"login": cmdLogin, "logout": cmdLogout, "publish": cmdPublish,
+		"init": cmdInit, "login": cmdLogin, "logout": cmdLogout, "publish": cmdPublish,
 		"resolve": cmdResolve, "verify": cmdVerify, "add": cmdAdd,
 		"remove": cmdRemove, "sync": cmdSync, "keys": cmdKeys, "curl": cmdCurl,
 		"version": func([]string) error { fmt.Println("messh", version); return nil },
@@ -103,12 +105,17 @@ func (m *multi) Set(v string) error { *m = append(*m, v); return nil }
 
 func cmdLogin(args []string) error {
 	parse(flag.NewFlagSet("login", flag.ExitOnError), args)
-	c := newClient()
+	_, err := login(newClient())
+	return err
+}
+
+// login runs the device flow, saves the session and leaves c signed in.
+func login(c *client) (string, error) {
 	c.token = ""
 	host, _ := os.Hostname()
 	var dc apitypes.DeviceCode
 	if err := c.do("POST", "/api/v1/device/code", map[string]string{"client_name": host}, &dc); err != nil {
-		return fmt.Errorf("registry %s: %w", c.base, err)
+		return "", fmt.Errorf("registry %s: %w", c.base, err)
 	}
 	open := dc.VerificationURIComplete
 	if open == "" {
@@ -130,21 +137,22 @@ func cmdLogin(args []string) error {
 				interval += 5 * time.Second
 				continue
 			case "access_denied":
-				return errors.New("sign-in was denied in the browser")
+				return "", errors.New("sign-in was denied in the browser")
 			case "expired_token":
-				return errors.New("the code expired; run messh login again")
+				return "", errors.New("the code expired; run messh login again")
 			}
 		}
 		if err != nil {
-			return err
+			return "", err
 		}
 		if err := saveSession(config{Registry: c.base, Username: tok.Username}, tok.AccessToken); err != nil {
-			return err
+			return "", err
 		}
+		c.token = tok.AccessToken
 		fmt.Printf("✓ Logged in as %s\n", tok.Username)
-		return nil
+		return tok.Username, nil
 	}
-	return errors.New("device code expired; run messh login again")
+	return "", errors.New("device code expired; run messh login again")
 }
 
 func cmdLogout(args []string) error {
@@ -190,41 +198,54 @@ func cmdPublish(args []string) error {
 	if err := c.mustAuth(); err != nil {
 		return err
 	}
-	data, err := os.ReadFile(*keyPath)
+	k, err := readPublicKey(*keyPath)
 	if err != nil {
 		return err
 	}
-	if sshkeys.LooksPrivate(data) {
-		return fmt.Errorf("refusing to publish %s: it is a private key. Publish the .pub file; private keys never leave this machine", *keyPath)
-	}
-	k, err := sshkeys.ParsePublic(data)
+	key, err := publishKey(c, *keyPath, k, *name, agents)
 	if err != nil {
-		return err
-	}
-
-	var ch apitypes.Challenge
-	if err := c.do("POST", "/api/v1/keys/challenge", apitypes.ChallengeRequest{PublicKey: k.Line}, &ch); err != nil {
-		return err
-	}
-	// Sign with the private half next to the .pub, or via ssh-agent for the .pub alone.
-	signer := strings.TrimSuffix(*keyPath, ".pub")
-	if _, err := os.Stat(signer); err != nil || signer == *keyPath {
-		signer = *keyPath
-	}
-	fmt.Printf("signing ownership challenge with %s…\n", signer)
-	sig, err := sshSign(signer, ch.Namespace, ch.Message)
-	if err != nil {
-		return err
-	}
-	var key apitypes.Key
-	if err := c.do("POST", "/api/v1/keys", apitypes.PublishRequest{
-		ChallengeID: ch.ID, Signature: sig, Name: *name, Agents: agents,
-	}, &key); err != nil {
 		return err
 	}
 	fmt.Printf("✓ %s %s (%s)\n", key.Type, key.Fingerprint, key.Name)
 	fmt.Printf("✓ Live at %s/%s\n", c.base, loadConfig().Username)
 	return nil
+}
+
+// readPublicKey reads the key to publish, refusing private keys.
+func readPublicKey(path string) (*sshkeys.Key, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	if sshkeys.LooksPrivate(data) {
+		return nil, fmt.Errorf("refusing to publish %s: it is a private key. Publish the .pub file; private keys never leave this machine", path)
+	}
+	return sshkeys.ParsePublic(data)
+}
+
+// publishKey proves possession of the key at keyPath and publishes it.
+func publishKey(c *client, keyPath string, k *sshkeys.Key, name string, agents []string) (*apitypes.Key, error) {
+	var ch apitypes.Challenge
+	if err := c.do("POST", "/api/v1/keys/challenge", apitypes.ChallengeRequest{PublicKey: k.Line}, &ch); err != nil {
+		return nil, err
+	}
+	// Sign with the private half next to the .pub, or via ssh-agent for the .pub alone.
+	signer := strings.TrimSuffix(keyPath, ".pub")
+	if _, err := os.Stat(signer); err != nil || signer == keyPath {
+		signer = keyPath
+	}
+	fmt.Printf("signing ownership challenge with %s…\n", signer)
+	sig, err := sshSign(signer, ch.Namespace, ch.Message)
+	if err != nil {
+		return nil, err
+	}
+	var key apitypes.Key
+	if err := c.do("POST", "/api/v1/keys", apitypes.PublishRequest{
+		ChallengeID: ch.ID, Signature: sig, Name: name, Agents: agents,
+	}, &key); err != nil {
+		return nil, err
+	}
+	return &key, nil
 }
 
 // sshSign produces an armored SSHSIG with ssh-keygen, so any key ssh-keygen
@@ -343,7 +364,8 @@ func cmdVerify(args []string) error {
 
 // --- add / remove / sync ---
 
-func confirm(prompt string) bool {
+// ask reads one answer, lowercased, from the terminal (stdin without one).
+func ask(prompt string) string {
 	in := os.Stdin
 	if tty, err := os.Open("/dev/tty"); err == nil {
 		defer tty.Close()
@@ -351,7 +373,12 @@ func confirm(prompt string) bool {
 	}
 	fmt.Print(prompt)
 	line, _ := bufio.NewReader(in).ReadString('\n')
-	return strings.EqualFold(strings.TrimSpace(line), "y") || strings.EqualFold(strings.TrimSpace(line), "yes")
+	return strings.ToLower(strings.TrimSpace(line))
+}
+
+func confirm(prompt string) bool {
+	a := ask(prompt)
+	return a == "y" || a == "yes"
 }
 
 func cmdAdd(args []string) error {

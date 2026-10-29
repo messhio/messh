@@ -5,7 +5,7 @@ VECTORS := test_ed25519.pub test_ed25519.pkcs8.pem web-bot-auth.json
 test: test-cli test-sdk vectors
 
 test-cli:      ## CLI vet and tests
-	docker run --rm -v "$(CURDIR)":/w -w /w/cli golang:1.26-alpine sh -c 'go vet ./... && go test ./...'
+	docker run --rm -v "$(CURDIR)":/w -w /w/cli golang:1.26-alpine sh -c 'apk add --no-cache openssh-keygen >/dev/null && go vet ./... && go test ./...'
 test-sdk:      ## all five SDKs against spec/vectors
 	sdk/test.sh
 vectors:       ## the reference implementation's tests, and spec/vectors is exactly what it writes

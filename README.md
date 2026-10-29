@@ -19,6 +19,7 @@ curl -fsSL https://messh.io/install.sh | sh
 ```
 
 ```text
+messh init                          set up in one step: sign in, publish your key, test a signed request
 messh login                         sign in (device code)
 messh publish [--key F] [--name N]  publish your SSH public key under your name
 messh add <user>                    let <user> into this machine (authorized_keys)

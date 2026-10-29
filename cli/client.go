@@ -129,6 +129,15 @@ func (c *client) mustAuth() error {
 	return nil
 }
 
+// me is the signed-in user and their active keys.
+func (c *client) me() (*apitypes.Profile, error) {
+	var p apitypes.Profile
+	if err := c.do("GET", "/api/v1/me", nil, &p); err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
 func (c *client) profile(username string) (*apitypes.Profile, error) {
 	var p apitypes.Profile
 	if err := c.do("GET", "/"+username+".json", nil, &p); err != nil {

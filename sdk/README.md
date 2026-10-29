@@ -40,6 +40,8 @@ All five produce byte-identical signatures and give the same verdicts. They are 
 
 **Check before the first request:** `whoami()` looks up your key directory on the registry and returns how APIs will see you (identity, key name, key ID, fingerprint). If the key isn't published it fails with `not_published` and says what to run, instead of every API answering 401 `unknown_key`. `fingerprint` is the key's `SHA256:…`, as `messh keys` and `ssh-keygen -l` print it.
 
+**Check end to end:** send any signed request to `https://messh.io/api/v1/echo`. messh verifies it as an API would, against your live keys, and answers who signed it, or the verifier error code below with a `hint`. `messh init` ends with this check; `messh curl https://messh.io/api/v1/echo` runs it by hand.
+
 **Client errors** (`code`): `invalid_identity`, `invalid_key`, `invalid_option`, `sign_failed` (Rust adds `send_failed`); from `whoami()`: `not_published`, `registry_unreachable`. Messages say how to fix the problem, e.g. a missing key file names `ssh-keygen -t ed25519` and `messh publish`.
 
 **What gets added to the request:** `Signature-Agent`, `Signature-Input`, `Signature`, and `Content-Digest` when there's a body. Covered components: `@method @authority @path [@query] [content-digest] signature-agent`, plus `created`, `expires`, `keyid` (RFC 7638 JWK thumbprint), `alg="ed25519"`, `nonce` and `tag="web-bot-auth"`.
