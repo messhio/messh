@@ -39,6 +39,26 @@ const verifier = new Verifier({ trust: ["mukul"] }); // fetch-style runtimes (Wo
 const agent = await verifier.verifyRequest(request);
 ```
 
+## New in 0.2.0
+
+Any HTTP message signature (RFC 9421), not only Web Bot Auth:
+
+```ts
+import { signMessage, verifyMessage } from "@messh/sdk/httpsig";
+
+const s = await signMessage({ method: "POST", url, headers, body }, signer, { components: ["@method", "@authority", "content-digest"], keyid: "k1", tag: "my-app" });
+await verifyMessage(signed, { tag: "my-app", keys: (kid) => publicKeys[kid] });
+```
+
+Other Web Bot Auth agents, and agents that sign less, alongside messh identities:
+
+```ts
+new Verifier({ trust: ["mukul", "https://agent.example"], requireComponents: ["@authority", "signature-agent"] });
+```
+
+Clients: `MesshClient.create({ ..., agentDictionary: true, components, label, tag })`. Self-hosted key directories:
+`directoryResponse(...)`. The full list is in [CHANGELOG.md](https://github.com/messhio/messh/blob/main/sdk/CHANGELOG.md).
+
 Full reference (every function, input and error code): https://github.com/messhio/messh/blob/main/sdk/README.md
 
 License: Apache-2.0

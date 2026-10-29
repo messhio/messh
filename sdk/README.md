@@ -69,7 +69,7 @@ All five produce byte-identical signatures and give the same verdicts. They are 
 - While messh is unreachable, cached keys keep working for stale-if-error, retried at most every 5 s. A 404 is never answered from the stale cache.
 - At most 10,000 directories are kept; the least recently stored go first.
 
-**Returns** an `Agent` with `identity`, `keyName`, `keyId`, `fingerprint`, `agentUrl` and `created`. **Failures** carry `code` + `status`:
+**Returns** an `Agent` with `identity`, `keyName`, `keyId`, `fingerprint`, `agentUrl`, `created`, and (0.2.0) `external` and `signedDirectory`. **Failures** carry `code` + `status`:
 
 | code | status | when |
 |---|---|---|
@@ -83,6 +83,72 @@ All five produce byte-identical signatures and give the same verdicts. They are 
 | `body_too_large` | 413 | The body is over max body bytes (middleware) |
 
 The order of checks: headers → digest → time → trust → key → signature → replay. Trust moved ahead of the key lookup (`06-signed-requests-spec.md` checks it last) so untrusted callers never cause a directory fetch.
+
+---
+
+## New in 0.2.0
+
+Everything above works as in 0.1.0. By default a 0.2.0 client sends the same bytes as 0.1.0, so deployed verifiers keep accepting it. The changes are listed in [`CHANGELOG.md`](CHANGELOG.md), and [`../spec/vectors/http-message-signatures.json`](../spec/vectors/http-message-signatures.json) checks them in every SDK.
+
+### Any HTTP message signature (RFC 9421)
+
+Sign and verify any request or response, not only Web Bot Auth:
+
+- any label, tag or key ID
+- every derived component: `@method @target-uri @authority @scheme @request-target @path @query @query-param @status`
+- every field parameter: `sf key bs req tr`
+- Content-Digest (`sha-256`, `sha-512`) when the body is known
+- `created` / `expires`, an optional maximum age, and a nonce store
+
+Write components as plain names (`content-type`) or as identifiers with parameters (`"example-dict";key="a"`, `"@authority";req`).
+
+| | sign | verify | one component |
+|---|---|---|---|
+| Go `messh.io/go/messh/httpsig` | `httpsig.Sign(m, signer, httpsig.SignOptions{…})` | `httpsig.Verify(m, httpsig.VerifyOptions{Keys: …})` | `httpsig.Component(m, "@query-param;…", nil)` |
+| Python `messh.httpsig` | `sign_message(m, signer, components=[…], keyid=…)` | `verify_message(m, keys={kid: pub})` | `component_value(m, …)` |
+| TS `@messh/sdk/httpsig` | `await signMessage(m, signer, { components, keyid })` | `await verifyMessage(m, { keys: (kid) => pub })` | `componentValue(m, …)` |
+| Rust `messh::httpsig` | `sign_message(&m, signer, &SignOptions { … })` | `verify_message(&m, &VerifyOptions::new(&keys))` | `component_value(&m, …)` |
+| Java `io.messh.httpsig` | `HttpSig.sign(m, signer, SignOptions.of(…).keyid(…))` | `HttpSig.verify(m, VerifyOptions.keys(kid -> pub))` | `HttpSig.componentValue(m, …)` |
+
+```go
+m, _ := httpsig.NewRequest("POST", "https://example.com/foo", header, body)
+s, _ := httpsig.Sign(m, signer, httpsig.SignOptions{Components: []string{"@method", "@authority", "content-digest"},
+    Created: time.Now(), KeyID: "test-key-ed25519", Tag: "my-app"})
+s.AddTo(header) // Signature-Input, Signature
+v, err := httpsig.Verify(m, httpsig.VerifyOptions{Tag: "my-app", Keys: myKeys, MaxAge: time.Minute})
+```
+
+### Web Bot Auth: more ways to sign
+
+All of these are off by default:
+
+| | Go | Python | TS | Rust | Java |
+|---|---|---|---|---|---|
+| cover more components | `WithComponents("content-type")` | `components=[…]` | `components: […]` | `.components([…])` | `.components(…)` |
+| another label / tag | `WithLabel`, `WithTag` | `label=`, `tag=` | `label`, `tag` | `.label()`, `.tag()` | `.label()`, `.tag()` |
+| dictionary `Signature-Agent` | `WithAgentDictionary()` | `agent_dictionary=True` | `agentDictionary: true` | `.agent_dictionary(true)` | `.agentDictionary(true)` |
+
+With the dictionary form, the client sends `Signature-Agent: sig1="https://messh.io/mukul"` and covers it as `"signature-agent";key="sig1"`, as newer drafts and Cloudflare's crate expect. Verifiers before 0.2.0 only accept the default string form.
+
+### Web Bot Auth: verify any agent
+
+- **Trust another agent by its origin:** `trust: ["https://agent.example"]`. Its key directory is fetched from `https://agent.example/.well-known/http-message-signatures-directory`, with the same cache rules. Other origins are refused with 403 before any fetch.
+- **Inline keys:** `Signature-Agent: "data:application/http-message-signatures-directory;base64,…"`. Trust them as `jwk:<thumbprint>`.
+- **`*` still means any messh identity only.** The returned `Agent` has `external` set for anything else, and `signedDirectory` when the key's directory response was signed.
+- **Every `Signature-Agent` form is read:** a string; a dictionary picked by the covered component's `key`; or, as in 0.1.0, the member named like the label.
+- **Required components are configurable** (`RequireComponents` / `require_components` / `requireComponents`) for agents that sign less, such as `("@authority" "signature-agent")`. `@target-uri` counts for `@authority`, `@path` and `@query`. Signature-Agent, a query and a body must be covered regardless.
+- **Signed key directories** (draft-meunier-http-message-signatures-directory §5) are checked when a directory carries signatures. `RequireSignedDirectory` / `require_signed_directory` / `requireSignedDirectory` ignores unsigned keys. Leave it off for messh identities until messh.io signs its directories. To check a response yourself: `verify.VerifyDirectory`, `verify_directory`, `verifyDirectory`, `verify::verify_directory`, `MesshVerifier.verifyDirectory`.
+- **Spec fixes:** duplicate signature labels and duplicate covered components are rejected, and an `alg` other than `ed25519` is refused.
+
+### Hosting your own key directory
+
+For agents served from your own domain, `DirectoryResponse` / `directory_response` / `directoryResponse` / `Directories.response` builds the JWKS and signs it once per key. The result is `binding0=("@authority";req "content-digest");…;tag="http-message-signatures-directory"`, the form Cloudflare's tools verify:
+
+```python
+from messh import directory_response, key_file
+r = directory_response("agent.example", [key_file("~/.ssh/id_ed25519")])
+# serve r.body with r.headers at https://agent.example/.well-known/http-message-signatures-directory; rebuild before it expires
+```
 
 ---
 
@@ -325,5 +391,6 @@ server.createContext("/api", handler).getFilters().add(new MesshHttpFilter(verif
 
   **Not included yet:** Django, Flask, Fastify-native, an axum/tower layer, a Servlet filter and a Spring Boot starter. Each one is a thin wrapper over `verify(...)`.
 - **Nonce store:** only in-memory ships. Multi-instance APIs need a shared store; the interface is one method.
-- **Directory trust:** the directory is fetched over HTTPS from the registries you list. The Web Bot Auth drafts also want the directory response itself signed, which needs a client-signed directory on messh. JWK `kid`s are checked against their keys' thumbprints.
-- **`Signature-Agent` shape:** `"<registry>/<user>"` (a path), as messh serves it. It isn't a bare origin.
+- **Directory trust:** verifiers check signed directory responses (0.2.0), but messh.io doesn't sign its directories yet, because the registry never holds private keys. That needs bindings the CLI signs. JWK `kid`s are checked against their keys' thumbprints.
+- **`Signature-Agent` shape:** messh identities are `"<registry>/<user>"` (a path), as messh serves them. Other agents are origins.
+- **Not planned:** signature timing measurements and algorithms other than Ed25519 (Cloudflare's crate implements only Ed25519 too).

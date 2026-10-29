@@ -21,15 +21,16 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
+	"messh.io/go/messh/httpsig"
+	"messh.io/go/messh/internal/sf"
 	"messh.io/go/messh/internal/wba"
 )
 
 // Version of this SDK.
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 // DefaultRegistry is where identities resolve unless WithRegistry says otherwise.
 const DefaultRegistry = "https://messh.io"
@@ -56,6 +57,11 @@ type Client struct {
 	http      *http.Client
 	now       func() time.Time
 	nonce     func() string
+
+	label      string
+	tag        string
+	components []string
+	agentDict  bool
 }
 
 // Option configures a Client.
@@ -94,6 +100,42 @@ func WithHTTPClient(h *http.Client) Option { return func(c *Client) error { c.ht
 func WithClock(now func() time.Time) Option { return func(c *Client) error { c.now = now; return nil } }
 func WithNonce(f func() string) Option      { return func(c *Client) error { c.nonce = f; return nil } }
 
+// WithComponents covers more components than the defaults, after them: plain
+// names ("content-type", "@target-uri") or identifiers with parameters
+// (`"@query-param";name="id"`).
+func WithComponents(components ...string) Option {
+	return func(c *Client) error { c.components = append(c.components, components...); return nil }
+}
+
+// WithLabel sets the signature label. Default "sig1".
+func WithLabel(label string) Option {
+	return func(c *Client) error {
+		if !sf.ValidKey(label) {
+			return &Error{"invalid_option", "a label is lowercase letters, digits and _-.*, starting with a letter"}
+		}
+		c.label = label
+		return nil
+	}
+}
+
+// WithTag sets the signature tag. Default "web-bot-auth"; with any other tag
+// it isn't a Web Bot Auth signature.
+func WithTag(tag string) Option {
+	return func(c *Client) error {
+		if tag == "" || !sf.ValidString(tag) {
+			return &Error{"invalid_option", "a tag is printable ASCII"}
+		}
+		c.tag = tag
+		return nil
+	}
+}
+
+// WithAgentDictionary sends Signature-Agent in the dictionary form of newer
+// Web Bot Auth drafts, keyed by the label (sig1="https://messh.io/mukul"),
+// and covers that member as "signature-agent";key="sig1". The default is the
+// string form, which messh verifiers before 0.2.0 require.
+func WithAgentDictionary() Option { return func(c *Client) error { c.agentDict = true; return nil } }
+
 // NewClient creates a client for identity, a messh username such as "mukul".
 func NewClient(identity string, opts ...Option) (*Client, error) {
 	if !identityRe.MatchString(identity) {
@@ -104,6 +146,7 @@ func NewClient(identity string, opts ...Option) (*Client, error) {
 		identity: identity, registry: DefaultRegistry, expiresIn: 60 * time.Second,
 		key:  KeyFile(filepath.Join(home, ".ssh", "id_ed25519")),
 		http: &http.Client{Timeout: 30 * time.Second}, now: time.Now, nonce: randomNonce,
+		label: wba.Label, tag: wba.Tag,
 	}
 	for _, o := range opts {
 		if err := o(c); err != nil {
@@ -205,23 +248,14 @@ func (c *Client) WhoAmI(ctx context.Context) (*PublishedKey, error) {
 // body, Content-Digest to req. Sign last: nothing may change the method,
 // host, path, query or body afterwards.
 func (c *Client) Sign(req *http.Request) error {
-	agentHeader := strconv.Quote(c.Agent())
-	req.Header.Set("Signature-Agent", agentHeader)
-	host := req.Host
-	if host == "" {
-		host = req.URL.Host
+	agent, agentComponent := sf.Str(c.Agent()).String(), "signature-agent"
+	if c.agentDict {
+		agent, agentComponent = c.label+"="+agent, `"signature-agent";key="`+c.label+`"`
 	}
-	path := req.URL.EscapedPath()
-	if path == "" {
-		path = "/"
-	}
-	comps := []wba.Component{
-		{Name: "@method", Value: strings.ToUpper(req.Method)},
-		{Name: "@authority", Value: strings.ToLower(host)},
-		{Name: "@path", Value: path},
-	}
+	req.Header.Set("Signature-Agent", agent)
+	comps := []string{"@method", "@authority", "@path"}
 	if req.URL.RawQuery != "" {
-		comps = append(comps, wba.Component{Name: "@query", Value: "?" + req.URL.RawQuery})
+		comps = append(comps, "@query")
 	}
 	if req.Body != nil && req.Body != http.NoBody {
 		body, err := io.ReadAll(req.Body)
@@ -232,24 +266,21 @@ func (c *Client) Sign(req *http.Request) error {
 		req.Body = io.NopCloser(bytes.NewReader(body))
 		req.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(body)), nil }
 		req.ContentLength = int64(len(body))
-		digest := wba.ContentDigest(body)
-		req.Header.Set("Content-Digest", digest)
-		comps = append(comps, wba.Component{Name: "content-digest", Value: digest})
+		req.Header.Set("Content-Digest", wba.ContentDigest(body))
+		comps = append(comps, "content-digest")
 	}
-	comps = append(comps, wba.Component{Name: "signature-agent", Value: agentHeader})
+	comps = append(append(comps, c.components...), agentComponent)
 
-	names := make([]string, len(comps))
-	for i, cp := range comps {
-		names[i] = cp.Name
-	}
-	created := c.now().Unix()
-	params := wba.Params(names, created, created+int64(c.expiresIn/time.Second), c.KeyID(), c.nonce())
-	sig, err := c.signer.Sign(wba.Base(comps, params))
+	m := httpsig.FromRequest(req, nil)
+	m.Method = strings.ToUpper(req.Method)
+	created := time.Unix(c.now().Unix(), 0)
+	s, err := httpsig.Sign(m, c.signer, httpsig.SignOptions{Label: c.label, Components: comps, Created: created,
+		Expires: created.Add(c.expiresIn), KeyID: c.KeyID(), Alg: "ed25519", Nonce: c.nonce(), Tag: c.tag})
 	if err != nil {
 		return &Error{"sign_failed", err.Error()}
 	}
-	req.Header.Set("Signature-Input", wba.Label+"="+params)
-	req.Header.Set("Signature", wba.Label+"=:"+base64.StdEncoding.EncodeToString(sig)+":")
+	req.Header.Set("Signature-Input", c.label+"="+s.Input)
+	req.Header.Set("Signature", c.label+"="+s.Signature)
 	return nil
 }
 

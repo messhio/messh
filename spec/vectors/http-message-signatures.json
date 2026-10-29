@@ -1,0 +1,2503 @@
+{
+  "components": [
+    {
+      "name": "field-host",
+      "message": "fields",
+      "component": "host",
+      "identifier": "\"host\"",
+      "value": "www.example.com"
+    },
+    {
+      "name": "field-date",
+      "message": "fields",
+      "component": "date",
+      "identifier": "\"date\"",
+      "value": "Tue, 20 Apr 2021 02:07:56 GMT"
+    },
+    {
+      "name": "field-name-lowercased",
+      "message": "fields",
+      "component": "Date",
+      "identifier": "\"date\"",
+      "value": "Tue, 20 Apr 2021 02:07:56 GMT"
+    },
+    {
+      "name": "field-ows-trimmed",
+      "message": "fields",
+      "component": "x-ows-header",
+      "identifier": "\"x-ows-header\"",
+      "value": "Leading and trailing whitespace."
+    },
+    {
+      "name": "field-obs-fold",
+      "message": "fields",
+      "component": "x-obs-fold-header",
+      "identifier": "\"x-obs-fold-header\"",
+      "value": "Obsolete line folding."
+    },
+    {
+      "name": "field-multiple-lines",
+      "message": "fields",
+      "component": "cache-control",
+      "identifier": "\"cache-control\"",
+      "value": "max-age=60, must-revalidate"
+    },
+    {
+      "name": "field-raw-dictionary",
+      "message": "fields",
+      "component": "example-dict",
+      "identifier": "\"example-dict\"",
+      "value": "a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+    },
+    {
+      "name": "field-empty",
+      "message": "fields",
+      "component": "x-empty-header",
+      "identifier": "\"x-empty-header\"",
+      "value": ""
+    },
+    {
+      "name": "field-sf",
+      "message": "fields",
+      "component": "\"example-dict\";sf",
+      "identifier": "\"example-dict\";sf",
+      "value": "a=1, b=2;x=1;y=2, c=(a b c)"
+    },
+    {
+      "name": "field-key-integer",
+      "message": "dict-members",
+      "component": "\"example-dict\";key=\"a\"",
+      "identifier": "\"example-dict\";key=\"a\"",
+      "value": "1"
+    },
+    {
+      "name": "field-key-boolean",
+      "message": "dict-members",
+      "component": "\"example-dict\";key=\"d\"",
+      "identifier": "\"example-dict\";key=\"d\"",
+      "value": "?1"
+    },
+    {
+      "name": "field-key-params",
+      "message": "dict-members",
+      "component": "\"example-dict\";key=\"b\"",
+      "identifier": "\"example-dict\";key=\"b\"",
+      "value": "2;x=1;y=2"
+    },
+    {
+      "name": "field-key-inner-list",
+      "message": "dict-members",
+      "component": "\"example-dict\";key=\"c\"",
+      "identifier": "\"example-dict\";key=\"c\"",
+      "value": "(a b c)"
+    },
+    {
+      "name": "field-key-missing",
+      "message": "dict-members",
+      "component": "\"example-dict\";key=\"zz\"",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "field-commas",
+      "message": "fields",
+      "component": "example-header",
+      "identifier": "\"example-header\"",
+      "value": "value, with, lots, of, commas"
+    },
+    {
+      "name": "field-bs-two-lines",
+      "message": "fields",
+      "component": "\"example-header\";bs",
+      "identifier": "\"example-header\";bs",
+      "value": ":dmFsdWUsIHdpdGgsIGxvdHM=:, :b2YsIGNvbW1hcw==:"
+    },
+    {
+      "name": "field-bs-one-line",
+      "message": "single-line-bs",
+      "component": "\"example-header\";bs",
+      "identifier": "\"example-header\";bs",
+      "value": ":dmFsdWUsIHdpdGgsIGxvdHMsIG9mLCBjb21tYXM=:"
+    },
+    {
+      "name": "field-bs-with-sf",
+      "message": "fields",
+      "component": "\"example-header\";bs;sf",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "field-unknown-parameter",
+      "message": "fields",
+      "component": "\"date\";foo",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "field-sf-unknown-type",
+      "message": "fields",
+      "component": "\"cache-control\";sf",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "field-missing",
+      "message": "fields",
+      "component": "x-missing",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "method",
+      "message": "fields",
+      "component": "@method",
+      "identifier": "\"@method\"",
+      "value": "POST"
+    },
+    {
+      "name": "target-uri",
+      "message": "fields",
+      "component": "@target-uri",
+      "identifier": "\"@target-uri\"",
+      "value": "https://www.example.com/path?param=value"
+    },
+    {
+      "name": "authority",
+      "message": "fields",
+      "component": "@authority",
+      "identifier": "\"@authority\"",
+      "value": "www.example.com"
+    },
+    {
+      "name": "scheme",
+      "message": "fields",
+      "component": "@scheme",
+      "identifier": "\"@scheme\"",
+      "value": "https"
+    },
+    {
+      "name": "request-target",
+      "message": "fields",
+      "component": "@request-target",
+      "identifier": "\"@request-target\"",
+      "value": "/path?param=value"
+    },
+    {
+      "name": "path",
+      "message": "fields",
+      "component": "@path",
+      "identifier": "\"@path\"",
+      "value": "/path"
+    },
+    {
+      "name": "query",
+      "message": "fields",
+      "component": "@query",
+      "identifier": "\"@query\"",
+      "value": "?param=value"
+    },
+    {
+      "name": "authority-from-url",
+      "message": "no-host",
+      "component": "@authority",
+      "identifier": "\"@authority\"",
+      "value": "www.example.com:8443"
+    },
+    {
+      "name": "target-uri-from-url",
+      "message": "no-host",
+      "component": "@target-uri",
+      "identifier": "\"@target-uri\"",
+      "value": "https://www.example.com:8443/"
+    },
+    {
+      "name": "path-empty",
+      "message": "empty-path",
+      "component": "@path",
+      "identifier": "\"@path\"",
+      "value": "/"
+    },
+    {
+      "name": "query-absent",
+      "message": "empty-path",
+      "component": "@query",
+      "identifier": "\"@query\"",
+      "value": "?"
+    },
+    {
+      "name": "target-uri-empty-path",
+      "message": "empty-path",
+      "component": "@target-uri",
+      "identifier": "\"@target-uri\"",
+      "value": "http://example.com/"
+    },
+    {
+      "name": "scheme-http",
+      "message": "empty-path",
+      "component": "@scheme",
+      "identifier": "\"@scheme\"",
+      "value": "http"
+    },
+    {
+      "name": "request-target-empty-path",
+      "message": "empty-path",
+      "component": "@request-target",
+      "identifier": "\"@request-target\"",
+      "value": "/"
+    },
+    {
+      "name": "path-percent-encoded",
+      "message": "encoded-path",
+      "component": "@path",
+      "identifier": "\"@path\"",
+      "value": "/a%20b/c"
+    },
+    {
+      "name": "query-percent-encoded",
+      "message": "encoded-path",
+      "component": "@query",
+      "identifier": "\"@query\"",
+      "value": "?x=%2D"
+    },
+    {
+      "name": "request-target-asterisk",
+      "message": "options-star",
+      "component": "@request-target",
+      "identifier": "\"@request-target\"",
+      "value": "*"
+    },
+    {
+      "name": "query-param",
+      "message": "query-params",
+      "component": "\"@query-param\";name=\"baz\"",
+      "identifier": "\"@query-param\";name=\"baz\"",
+      "value": "batman"
+    },
+    {
+      "name": "query-param-empty",
+      "message": "query-params",
+      "component": "\"@query-param\";name=\"qux\"",
+      "identifier": "\"@query-param\";name=\"qux\"",
+      "value": ""
+    },
+    {
+      "name": "query-param-first",
+      "message": "query-params",
+      "component": "\"@query-param\";name=\"param\"",
+      "identifier": "\"@query-param\";name=\"param\"",
+      "value": "value"
+    },
+    {
+      "name": "query-param-encoded-value",
+      "message": "query-encoding",
+      "component": "\"@query-param\";name=\"var\"",
+      "identifier": "\"@query-param\";name=\"var\"",
+      "value": "this%20is%20a%20big%0Amultiline%20value"
+    },
+    {
+      "name": "query-param-plus",
+      "message": "query-encoding",
+      "component": "\"@query-param\";name=\"bar\"",
+      "identifier": "\"@query-param\";name=\"bar\"",
+      "value": "with%20plus%20whitespace"
+    },
+    {
+      "name": "query-param-encoded-name",
+      "message": "query-encoding",
+      "component": "\"@query-param\";name=\"fa%C3%A7ade%22%3A%20\"",
+      "identifier": "\"@query-param\";name=\"fa%C3%A7ade%22%3A%20\"",
+      "value": "something"
+    },
+    {
+      "name": "query-param-missing",
+      "message": "query-params",
+      "component": "\"@query-param\";name=\"missing\"",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "query-param-repeated",
+      "message": "query-dupe",
+      "component": "\"@query-param\";name=\"a\"",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "query-param-once",
+      "message": "query-dupe",
+      "component": "\"@query-param\";name=\"b\"",
+      "identifier": "\"@query-param\";name=\"b\"",
+      "value": ""
+    },
+    {
+      "name": "query-param-no-name",
+      "message": "query-params",
+      "component": "@query-param",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "status-on-request",
+      "message": "fields",
+      "component": "@status",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "status",
+      "message": "test-response",
+      "component": "@status",
+      "identifier": "\"@status\"",
+      "value": "200"
+    },
+    {
+      "name": "req-authority",
+      "message": "test-response",
+      "component": "\"@authority\";req",
+      "identifier": "\"@authority\";req",
+      "value": "example.com"
+    },
+    {
+      "name": "req-method",
+      "message": "test-response",
+      "component": "\"@method\";req",
+      "identifier": "\"@method\";req",
+      "value": "POST"
+    },
+    {
+      "name": "req-path",
+      "message": "test-response",
+      "component": "\"@path\";req",
+      "identifier": "\"@path\";req",
+      "value": "/foo"
+    },
+    {
+      "name": "req-query",
+      "message": "test-response",
+      "component": "\"@query\";req",
+      "identifier": "\"@query\";req",
+      "value": "?param=Value\u0026Pet=dog"
+    },
+    {
+      "name": "req-field",
+      "message": "test-response",
+      "component": "\"content-type\";req",
+      "identifier": "\"content-type\";req",
+      "value": "application/json"
+    },
+    {
+      "name": "req-on-request",
+      "message": "fields",
+      "component": "\"@method\";req",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "req-status",
+      "message": "test-response",
+      "component": "\"@status\";req",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "trailer",
+      "message": "trailers",
+      "component": "\"expires\";tr",
+      "identifier": "\"expires\";tr",
+      "value": "Wed, 9 Nov 2022 07:28:00 GMT"
+    },
+    {
+      "name": "trailer-not-a-header",
+      "message": "trailers",
+      "component": "expires",
+      "value": "",
+      "error": true
+    },
+    {
+      "name": "unknown-derived",
+      "message": "fields",
+      "component": "@foo",
+      "value": "",
+      "error": true
+    }
+  ],
+  "description": "messh 0.2.0 conformance vectors: RFC 9421 HTTP message signatures for any message, RFC 8941 structured fields, Web Bot Auth agents beyond messh identities, and signed key directories. Expected values are written by hand from the RFCs (spec/vectors/gen/httpsig.go); the generator only signs them.",
+  "directory": {
+    "sign": {
+      "authority": "agent.example",
+      "created": 1760000000,
+      "expected_body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+      "expected_headers": {
+        "Content-Digest": "sha-256=:twZbL2/lul+Dpbgx8iXKW4zBsceXsEulBuOhdqWnCYc=:",
+        "Signature": "binding0=:8uW7Uo+y6EZsEo2YG2fw/hv9HNV8RuzfSIcTs1SWzxRqfkSNbBkInDwaGSQwLLj1uoSih3RyWNnksoe+QuxfCg==:, binding1=:Zooyyn6xxsdZHWrON30yPqQgYErcDNWRVWZUpPoc7urnWrO1Obg/aYe2gPlp0Ihf4VIM2CZZuQadtUhrbPikDw==:",
+        "Signature-Input": "binding0=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";tag=\"http-message-signatures-directory\", binding1=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";tag=\"http-message-signatures-directory\""
+      },
+      "expires_in": 300,
+      "keys": [
+        "messh",
+        "second"
+      ]
+    },
+    "verify": [
+      {
+        "name": "signed",
+        "url": "https://agent.example/.well-known/http-message-signatures-directory",
+        "headers": {
+          "Content-Digest": "sha-256=:twZbL2/lul+Dpbgx8iXKW4zBsceXsEulBuOhdqWnCYc=:",
+          "Signature": "binding0=:8uW7Uo+y6EZsEo2YG2fw/hv9HNV8RuzfSIcTs1SWzxRqfkSNbBkInDwaGSQwLLj1uoSih3RyWNnksoe+QuxfCg==:, binding1=:Zooyyn6xxsdZHWrON30yPqQgYErcDNWRVWZUpPoc7urnWrO1Obg/aYe2gPlp0Ihf4VIM2CZZuQadtUhrbPikDw==:",
+          "Signature-Input": "binding0=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";tag=\"http-message-signatures-directory\", binding1=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";tag=\"http-message-signatures-directory\""
+        },
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000010,
+        "expect_signed": [
+          "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4",
+          "XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY"
+        ]
+      },
+      {
+        "name": "other-authority",
+        "url": "https://evil.example/.well-known/http-message-signatures-directory",
+        "headers": {
+          "Content-Digest": "sha-256=:twZbL2/lul+Dpbgx8iXKW4zBsceXsEulBuOhdqWnCYc=:",
+          "Signature": "binding0=:8uW7Uo+y6EZsEo2YG2fw/hv9HNV8RuzfSIcTs1SWzxRqfkSNbBkInDwaGSQwLLj1uoSih3RyWNnksoe+QuxfCg==:, binding1=:Zooyyn6xxsdZHWrON30yPqQgYErcDNWRVWZUpPoc7urnWrO1Obg/aYe2gPlp0Ihf4VIM2CZZuQadtUhrbPikDw==:",
+          "Signature-Input": "binding0=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";tag=\"http-message-signatures-directory\", binding1=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";tag=\"http-message-signatures-directory\""
+        },
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000010,
+        "expect_signed": []
+      },
+      {
+        "name": "body-changed",
+        "url": "https://agent.example/.well-known/http-message-signatures-directory",
+        "headers": {
+          "Content-Digest": "sha-256=:twZbL2/lul+Dpbgx8iXKW4zBsceXsEulBuOhdqWnCYc=:",
+          "Signature": "binding0=:8uW7Uo+y6EZsEo2YG2fw/hv9HNV8RuzfSIcTs1SWzxRqfkSNbBkInDwaGSQwLLj1uoSih3RyWNnksoe+QuxfCg==:, binding1=:Zooyyn6xxsdZHWrON30yPqQgYErcDNWRVWZUpPoc7urnWrO1Obg/aYe2gPlp0Ihf4VIM2CZZuQadtUhrbPikDw==:",
+          "Signature-Input": "binding0=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";tag=\"http-message-signatures-directory\", binding1=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";tag=\"http-message-signatures-directory\""
+        },
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000010,
+        "expect_signed": []
+      },
+      {
+        "name": "expired",
+        "url": "https://agent.example/.well-known/http-message-signatures-directory",
+        "headers": {
+          "Content-Digest": "sha-256=:twZbL2/lul+Dpbgx8iXKW4zBsceXsEulBuOhdqWnCYc=:",
+          "Signature": "binding0=:8uW7Uo+y6EZsEo2YG2fw/hv9HNV8RuzfSIcTs1SWzxRqfkSNbBkInDwaGSQwLLj1uoSih3RyWNnksoe+QuxfCg==:, binding1=:Zooyyn6xxsdZHWrON30yPqQgYErcDNWRVWZUpPoc7urnWrO1Obg/aYe2gPlp0Ihf4VIM2CZZuQadtUhrbPikDw==:",
+          "Signature-Input": "binding0=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";tag=\"http-message-signatures-directory\", binding1=(\"@authority\";req \"content-digest\");created=1760000000;expires=1760000300;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";tag=\"http-message-signatures-directory\""
+        },
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000301,
+        "expect_signed": []
+      },
+      {
+        "name": "unsigned",
+        "url": "https://agent.example/.well-known/http-message-signatures-directory",
+        "headers": {},
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000010,
+        "expect_signed": []
+      },
+      {
+        "name": "plain-authority",
+        "url": "https://agent.example/.well-known/http-message-signatures-directory",
+        "headers": {
+          "Signature": "binding0=:hRgzQDCpG/c4NMtSPgP4ONnQQFSWk1nAXjsJvjG+QUhC3oaQv4mmlJKA6WrDYPW+LyJdJtlaM1E5/g8yJcNECQ==:",
+          "Signature-Input": "binding0=(\"@authority\");created=1760000000;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";expires=1760000300;tag=\"http-message-signatures-directory\""
+        },
+        "body": "{\"keys\":[{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg\",\"kid\":\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\"},{\"kty\":\"OKP\",\"crv\":\"Ed25519\",\"x\":\"YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw\",\"kid\":\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\"}]}",
+        "now": 1760000010,
+        "expect_signed": [
+          "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4"
+        ]
+      }
+    ]
+  },
+  "field_types": {
+    "example-dict": "dictionary"
+  },
+  "keys": {
+    "messh": {
+      "seed_hex": "9752d22ad41d7b76a1ba4a03a0787bec5b43963d933b98dde9b41c708566f656",
+      "x": "HmUFFd4Sep8w-qT-UZWFFvF3ncbWz0v2ox3dlEin7mg",
+      "thumbprint": "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4"
+    },
+    "second": {
+      "seed_hex": "df38a52addb82b1389b0c1a8031c3598cf60fdf342d89ecde6068472556db3b8",
+      "x": "YO1okRhClnhRoPZVvBIjbmMgdzOCvev44p7urn1Adpw",
+      "thumbprint": "XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY"
+    },
+    "test-key-ed25519": {
+      "seed_hex": "9f8362f87a484a954e6e740c5b4c0e84229139a20aa8ab56ff66586f6a7d29c5",
+      "x": "JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs",
+      "thumbprint": "poqkLGiymh_W0uP6PZFw-dvez3QJT5SolqXBCW38r0U"
+    }
+  },
+  "messages": {
+    "dict-members": {
+      "method": "GET",
+      "url": "https://www.example.com/",
+      "headers": [
+        [
+          "Example-Dict",
+          "  a=1, b=2;x=1;y=2, c=(a   b    c), d"
+        ]
+      ]
+    },
+    "empty-path": {
+      "method": "GET",
+      "url": "http://example.com",
+      "headers": []
+    },
+    "encoded-path": {
+      "method": "GET",
+      "url": "https://example.com/a%20b/c?x=%2D",
+      "headers": []
+    },
+    "fields": {
+      "method": "POST",
+      "url": "https://www.example.com/path?param=value",
+      "headers": [
+        [
+          "Host",
+          "www.example.com"
+        ],
+        [
+          "Date",
+          "Tue, 20 Apr 2021 02:07:56 GMT"
+        ],
+        [
+          "X-OWS-Header",
+          "   Leading and trailing whitespace.   "
+        ],
+        [
+          "X-Obs-Fold-Header",
+          "Obsolete\r\n    line folding."
+        ],
+        [
+          "Cache-Control",
+          "max-age=60"
+        ],
+        [
+          "Cache-Control",
+          "   must-revalidate"
+        ],
+        [
+          "Example-Dict",
+          " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+        ],
+        [
+          "X-Empty-Header",
+          ""
+        ],
+        [
+          "Example-Header",
+          "value, with, lots"
+        ],
+        [
+          "Example-Header",
+          "of, commas"
+        ]
+      ]
+    },
+    "no-host": {
+      "method": "GET",
+      "url": "https://WWW.Example.com:8443/",
+      "headers": []
+    },
+    "options-star": {
+      "method": "OPTIONS",
+      "url": "https://www.example.com/",
+      "request_target": "*",
+      "headers": [
+        [
+          "Host",
+          "www.example.com"
+        ]
+      ]
+    },
+    "query-dupe": {
+      "method": "GET",
+      "url": "https://www.example.com/path?a=1\u0026a=2\u0026b=",
+      "headers": []
+    },
+    "query-encoding": {
+      "method": "GET",
+      "url": "https://www.example.com/parameters?var=this%20is%20a%20big%0Amultiline%20value\u0026bar=with+plus+whitespace\u0026fa%C3%A7ade%22%3A%20=something",
+      "headers": []
+    },
+    "query-params": {
+      "method": "GET",
+      "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+      "headers": [
+        [
+          "Host",
+          "www.example.com"
+        ]
+      ]
+    },
+    "single-line-bs": {
+      "method": "GET",
+      "url": "https://www.example.com/",
+      "headers": [
+        [
+          "Example-Header",
+          "value, with, lots, of, commas"
+        ]
+      ]
+    },
+    "test-request": {
+      "method": "POST",
+      "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+      "headers": [
+        [
+          "Host",
+          "example.com"
+        ],
+        [
+          "Date",
+          "Tue, 20 Apr 2021 02:07:55 GMT"
+        ],
+        [
+          "Content-Type",
+          "application/json"
+        ],
+        [
+          "Content-Digest",
+          "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+        ],
+        [
+          "Content-Length",
+          "18"
+        ]
+      ],
+      "body": "{\"hello\": \"world\"}"
+    },
+    "test-response": {
+      "status": 200,
+      "headers": [
+        [
+          "Date",
+          "Tue, 20 Apr 2021 02:07:56 GMT"
+        ],
+        [
+          "Content-Type",
+          "application/json"
+        ],
+        [
+          "Content-Digest",
+          "sha-512=:mEWXIS7MaLRuGgxOBdODa3xqM1XdEvxoYhvlCFJ41QJgJc4GTsPp29l5oGX69wWdXymyU0rjJuahq4l5aGgfLQ==:"
+        ],
+        [
+          "Content-Length",
+          "23"
+        ]
+      ],
+      "body": "{\"message\": \"good dog\"}",
+      "request": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      }
+    },
+    "trailers": {
+      "status": 200,
+      "headers": [
+        [
+          "Content-Type",
+          "text/plain"
+        ],
+        [
+          "Trailer",
+          "Expires"
+        ]
+      ],
+      "trailers": [
+        [
+          "Expires",
+          "Wed, 9 Nov 2022 07:28:00 GMT"
+        ]
+      ]
+    }
+  },
+  "sign": [
+    {
+      "name": "rfc9421-b26-ed25519",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "key": "test-key-ed25519",
+      "label": "sig-b26",
+      "components": [
+        "date",
+        "@method",
+        "@path",
+        "@authority",
+        "content-type",
+        "content-length"
+      ],
+      "params": {
+        "created": 1618884473,
+        "keyid": "test-key-ed25519"
+      },
+      "expected_base": "\"date\": Tue, 20 Apr 2021 02:07:55 GMT\n\"@method\": POST\n\"@path\": /foo\n\"@authority\": example.com\n\"content-type\": application/json\n\"content-length\": 18\n\"@signature-params\": (\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\"",
+      "expected_headers": {
+        "Signature": "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:",
+        "Signature-Input": "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+      }
+    },
+    {
+      "name": "response-with-request-components",
+      "message": {
+        "status": 200,
+        "headers": [
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:56 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:mEWXIS7MaLRuGgxOBdODa3xqM1XdEvxoYhvlCFJ41QJgJc4GTsPp29l5oGX69wWdXymyU0rjJuahq4l5aGgfLQ==:"
+          ],
+          [
+            "Content-Length",
+            "23"
+          ]
+        ],
+        "body": "{\"message\": \"good dog\"}",
+        "request": {
+          "method": "POST",
+          "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+          "headers": [
+            [
+              "Host",
+              "example.com"
+            ],
+            [
+              "Date",
+              "Tue, 20 Apr 2021 02:07:55 GMT"
+            ],
+            [
+              "Content-Type",
+              "application/json"
+            ],
+            [
+              "Content-Digest",
+              "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+            ],
+            [
+              "Content-Length",
+              "18"
+            ]
+          ],
+          "body": "{\"hello\": \"world\"}"
+        }
+      },
+      "key": "test-key-ed25519",
+      "label": "reqres",
+      "components": [
+        "@status",
+        "content-type",
+        "content-digest",
+        "\"@authority\";req",
+        "\"@method\";req",
+        "\"@path\";req",
+        "\"@query\";req",
+        "\"content-digest\";req"
+      ],
+      "params": {
+        "created": 1618884479,
+        "keyid": "test-key-ed25519",
+        "alg": "ed25519"
+      },
+      "expected_base": "\"@status\": 200\n\"content-type\": application/json\n\"content-digest\": sha-512=:mEWXIS7MaLRuGgxOBdODa3xqM1XdEvxoYhvlCFJ41QJgJc4GTsPp29l5oGX69wWdXymyU0rjJuahq4l5aGgfLQ==:\n\"@authority\";req: example.com\n\"@method\";req: POST\n\"@path\";req: /foo\n\"@query\";req: ?param=Value\u0026Pet=dog\n\"content-digest\";req: sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:\n\"@signature-params\": (\"@status\" \"content-type\" \"content-digest\" \"@authority\";req \"@method\";req \"@path\";req \"@query\";req \"content-digest\";req);created=1618884479;keyid=\"test-key-ed25519\";alg=\"ed25519\"",
+      "expected_headers": {
+        "Signature": "reqres=:+y9uRmDtm3QcJx1IGgfjNXLX/6rA7lLjGGxSSfkkU2HvD/UqStaWNPSD1pPH4Sj+4T613nDC/h5pYwWlFjGTBg==:",
+        "Signature-Input": "reqres=(\"@status\" \"content-type\" \"content-digest\" \"@authority\";req \"@method\";req \"@path\";req \"@query\";req \"content-digest\";req);created=1618884479;keyid=\"test-key-ed25519\";alg=\"ed25519\""
+      }
+    },
+    {
+      "name": "parameters-and-derived-components",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ]
+        ]
+      },
+      "key": "messh",
+      "label": "sig1",
+      "components": [
+        "\"@query-param\";name=\"baz\"",
+        "\"example-dict\";key=\"b\"",
+        "\"example-dict\";sf",
+        "\"example-header\";bs",
+        "@target-uri",
+        "@scheme",
+        "@request-target"
+      ],
+      "params": {
+        "created": 1760000000,
+        "expires": 1760000060,
+        "keyid": "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4",
+        "alg": "ed25519",
+        "nonce": "nonce-fields-1",
+        "tag": "custom"
+      },
+      "expected_base": "\"@query-param\";name=\"baz\": batman\n\"example-dict\";key=\"b\": 2;x=1;y=2\n\"example-dict\";sf: a=1, b=2;x=1;y=2, c=(a b c)\n\"example-header\";bs: :dmFsdWUsIHdpdGgsIGxvdHM=:, :b2YsIGNvbW1hcw==:\n\"@target-uri\": https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=\n\"@scheme\": https\n\"@request-target\": /path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=\n\"@signature-params\": (\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\"",
+      "expected_headers": {
+        "Signature": "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:",
+        "Signature-Input": "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\""
+      }
+    },
+    {
+      "name": "request-content-digest",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "key": "test-key-ed25519",
+      "label": "sig1",
+      "components": [
+        "@method",
+        "@authority",
+        "@path",
+        "content-digest"
+      ],
+      "params": {
+        "created": 1618884480,
+        "keyid": "test-key-ed25519"
+      },
+      "expected_base": "\"@method\": POST\n\"@authority\": example.com\n\"@path\": /foo\n\"content-digest\": sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"content-digest\");created=1618884480;keyid=\"test-key-ed25519\"",
+      "expected_headers": {
+        "Signature": "sig1=:0IymuDsT1euhlUtp7eIZsTcBjBLI9nlK6hHArhM89T0uBXSRfSpm5ptJxmiJNPMo+Zg5Xrota6J3LoWopKCQDQ==:",
+        "Signature-Input": "sig1=(\"@method\" \"@authority\" \"@path\" \"content-digest\");created=1618884480;keyid=\"test-key-ed25519\""
+      }
+    },
+    {
+      "name": "web-bot-auth-dictionary-agent",
+      "message": {
+        "method": "GET",
+        "url": "https://app.example/api/hello",
+        "headers": [
+          [
+            "Signature-Agent",
+            "sig1=\"https://registry.example/mukul\""
+          ]
+        ]
+      },
+      "key": "messh",
+      "label": "sig1",
+      "components": [
+        "@method",
+        "@authority",
+        "@path",
+        "\"signature-agent\";key=\"sig1\""
+      ],
+      "params": {
+        "created": 1760000000,
+        "expires": 1760000060,
+        "keyid": "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4",
+        "alg": "ed25519",
+        "nonce": "nonce-dict-1",
+        "tag": "web-bot-auth"
+      },
+      "expected_base": "\"@method\": GET\n\"@authority\": app.example\n\"@path\": /api/hello\n\"signature-agent\";key=\"sig1\": \"https://registry.example/mukul\"\n\"@signature-params\": (\"@method\" \"@authority\" \"@path\" \"signature-agent\";key=\"sig1\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-dict-1\";tag=\"web-bot-auth\"",
+      "expected_headers": {
+        "Signature": "sig1=:R3mnKkuemzYREn6HfwKSWRoc8fvlz0XPm3ulMw/M7oPwUcKZvcDGYArKvXHH+OD48/z5YKaFY7944oQhP9HODQ==:",
+        "Signature-Agent": "sig1=\"https://registry.example/mukul\"",
+        "Signature-Input": "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\";key=\"sig1\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-dict-1\";tag=\"web-bot-auth\""
+      },
+      "client": {
+        "identity": "mukul",
+        "registry": "https://registry.example",
+        "agent_dictionary": true,
+        "created": 1760000000,
+        "nonce": "nonce-dict-1"
+      }
+    }
+  ],
+  "structured_fields": [
+    {
+      "name": "dict-ows",
+      "type": "dictionary",
+      "input": "a=1,    b=2;x=1;y=2,   c=(a   b   c)",
+      "canonical": "a=1, b=2;x=1;y=2, c=(a b c)"
+    },
+    {
+      "name": "dict-boolean-member",
+      "type": "dictionary",
+      "input": "a=1, b=2;x=1;y=2, c=(a   b    c), d",
+      "canonical": "a=1, b=2;x=1;y=2, c=(a b c), d"
+    },
+    {
+      "name": "dict-explicit-booleans",
+      "type": "dictionary",
+      "input": "a=?1, b=?0",
+      "canonical": "a, b=?0"
+    },
+    {
+      "name": "dict-boolean-params",
+      "type": "dictionary",
+      "input": "a;x=?1;y=?0",
+      "canonical": "a;x;y=?0"
+    },
+    {
+      "name": "dict-duplicate-key-last-wins",
+      "type": "dictionary",
+      "input": "a=1, b=2, a=3",
+      "canonical": "a=3, b=2"
+    },
+    {
+      "name": "dict-signature-input",
+      "type": "dictionary",
+      "input": "sig1=(\"@method\" \"@path\";req);created=1;keyid=\"k\"",
+      "canonical": "sig1=(\"@method\" \"@path\";req);created=1;keyid=\"k\""
+    },
+    {
+      "name": "dict-empty",
+      "type": "dictionary",
+      "input": "",
+      "canonical": ""
+    },
+    {
+      "name": "list-mixed",
+      "type": "list",
+      "input": "1, \"two\", three, :Zm91cg==:, ?1, 5.5",
+      "canonical": "1, \"two\", three, :Zm91cg==:, ?1, 5.5"
+    },
+    {
+      "name": "list-inner",
+      "type": "list",
+      "input": "(a b);q=1, (\"c\" 2)",
+      "canonical": "(a b);q=1, (\"c\" 2)"
+    },
+    {
+      "name": "list-empty-inner",
+      "type": "list",
+      "input": "()",
+      "canonical": "()"
+    },
+    {
+      "name": "list-ows",
+      "type": "list",
+      "input": "a ,  b",
+      "canonical": "a, b"
+    },
+    {
+      "name": "item-string-escapes",
+      "type": "item",
+      "input": "\"a\\\"b\\\\c\"",
+      "canonical": "\"a\\\"b\\\\c\""
+    },
+    {
+      "name": "item-token",
+      "type": "item",
+      "input": "*foo/bar:baz",
+      "canonical": "*foo/bar:baz"
+    },
+    {
+      "name": "item-decimal-trailing-zero",
+      "type": "item",
+      "input": "1.50",
+      "canonical": "1.5"
+    },
+    {
+      "name": "item-decimal-negative",
+      "type": "item",
+      "input": "-0.250",
+      "canonical": "-0.25"
+    },
+    {
+      "name": "item-decimal-whole",
+      "type": "item",
+      "input": "3.0",
+      "canonical": "3.0"
+    },
+    {
+      "name": "item-decimal-three-places",
+      "type": "item",
+      "input": "1.123",
+      "canonical": "1.123"
+    },
+    {
+      "name": "item-integer",
+      "type": "item",
+      "input": "-12345",
+      "canonical": "-12345"
+    },
+    {
+      "name": "item-bytes",
+      "type": "item",
+      "input": ":YWJj:",
+      "canonical": ":YWJj:"
+    },
+    {
+      "name": "item-params",
+      "type": "item",
+      "input": "\"s\";a=1;b=\"x\";c",
+      "canonical": "\"s\";a=1;b=\"x\";c"
+    },
+    {
+      "name": "item-surrounding-spaces",
+      "type": "item",
+      "input": "  token  ",
+      "canonical": "token"
+    },
+    {
+      "name": "err-dict-trailing-comma",
+      "type": "dictionary",
+      "input": "a=1,",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-dict-uppercase-key",
+      "type": "dictionary",
+      "input": "A=1",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-dict-missing-comma",
+      "type": "dictionary",
+      "input": "a=1 b=2",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-dict-unterminated-inner",
+      "type": "dictionary",
+      "input": "a=(1 2",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-item-unterminated-string",
+      "type": "item",
+      "input": "\"abc",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-item-four-decimals",
+      "type": "item",
+      "input": "1.1234",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-item-long-integer",
+      "type": "item",
+      "input": "1234567890123456",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-item-bad-boolean",
+      "type": "item",
+      "input": "?2",
+      "canonical": "",
+      "error": true
+    },
+    {
+      "name": "err-item-non-ascii",
+      "type": "item",
+      "input": "\"é\"",
+      "canonical": "",
+      "error": true
+    }
+  ],
+  "verify": [
+    {
+      "name": "rfc9421-b26-ok",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "ok",
+      "expect_label": "sig-b26"
+    },
+    {
+      "name": "rfc9421-b26-tampered",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:56 GMT"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "rfc9421-b26-unknown-key",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {},
+      "now": 1618884480,
+      "expect": "unknown_key"
+    },
+    {
+      "name": "rfc9421-b26-too-old",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618888073,
+      "max_age": 60,
+      "expect": "clock_skew"
+    },
+    {
+      "name": "rfc9421-b26-from-the-future",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618880873,
+      "expect": "clock_skew"
+    },
+    {
+      "name": "response-ok",
+      "message": {
+        "status": 200,
+        "headers": [
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:56 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:mEWXIS7MaLRuGgxOBdODa3xqM1XdEvxoYhvlCFJ41QJgJc4GTsPp29l5oGX69wWdXymyU0rjJuahq4l5aGgfLQ==:"
+          ],
+          [
+            "Content-Length",
+            "23"
+          ],
+          [
+            "Signature-Input",
+            "reqres=(\"@status\" \"content-type\" \"content-digest\" \"@authority\";req \"@method\";req \"@path\";req \"@query\";req \"content-digest\";req);created=1618884479;keyid=\"test-key-ed25519\";alg=\"ed25519\""
+          ],
+          [
+            "Signature",
+            "reqres=:+y9uRmDtm3QcJx1IGgfjNXLX/6rA7lLjGGxSSfkkU2HvD/UqStaWNPSD1pPH4Sj+4T613nDC/h5pYwWlFjGTBg==:"
+          ]
+        ],
+        "body": "{\"message\": \"good dog\"}",
+        "request": {
+          "method": "POST",
+          "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+          "headers": [
+            [
+              "Host",
+              "example.com"
+            ],
+            [
+              "Date",
+              "Tue, 20 Apr 2021 02:07:55 GMT"
+            ],
+            [
+              "Content-Type",
+              "application/json"
+            ],
+            [
+              "Content-Digest",
+              "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+            ],
+            [
+              "Content-Length",
+              "18"
+            ]
+          ],
+          "body": "{\"hello\": \"world\"}"
+        }
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "ok",
+      "expect_label": "reqres"
+    },
+    {
+      "name": "response-other-request",
+      "message": {
+        "status": 200,
+        "headers": [
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:56 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:mEWXIS7MaLRuGgxOBdODa3xqM1XdEvxoYhvlCFJ41QJgJc4GTsPp29l5oGX69wWdXymyU0rjJuahq4l5aGgfLQ==:"
+          ],
+          [
+            "Content-Length",
+            "23"
+          ],
+          [
+            "Signature-Input",
+            "reqres=(\"@status\" \"content-type\" \"content-digest\" \"@authority\";req \"@method\";req \"@path\";req \"@query\";req \"content-digest\";req);created=1618884479;keyid=\"test-key-ed25519\";alg=\"ed25519\""
+          ],
+          [
+            "Signature",
+            "reqres=:+y9uRmDtm3QcJx1IGgfjNXLX/6rA7lLjGGxSSfkkU2HvD/UqStaWNPSD1pPH4Sj+4T613nDC/h5pYwWlFjGTBg==:"
+          ]
+        ],
+        "body": "{\"message\": \"good dog\"}",
+        "request": {
+          "method": "POST",
+          "url": "https://example.com/bar?param=Value\u0026Pet=dog",
+          "headers": [
+            [
+              "Host",
+              "example.com"
+            ],
+            [
+              "Date",
+              "Tue, 20 Apr 2021 02:07:55 GMT"
+            ],
+            [
+              "Content-Type",
+              "application/json"
+            ],
+            [
+              "Content-Digest",
+              "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+            ],
+            [
+              "Content-Length",
+              "18"
+            ]
+          ],
+          "body": "{\"hello\": \"world\"}"
+        }
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "content-digest-ok",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@method\" \"@authority\" \"@path\" \"content-digest\");created=1618884480;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig1=:0IymuDsT1euhlUtp7eIZsTcBjBLI9nlK6hHArhM89T0uBXSRfSpm5ptJxmiJNPMo+Zg5Xrota6J3LoWopKCQDQ==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884481,
+      "expect": "ok",
+      "expect_label": "sig1"
+    },
+    {
+      "name": "content-digest-mismatch",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@method\" \"@authority\" \"@path\" \"content-digest\");created=1618884480;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig1=:0IymuDsT1euhlUtp7eIZsTcBjBLI9nlK6hHArhM89T0uBXSRfSpm5ptJxmiJNPMo+Zg5Xrota6J3LoWopKCQDQ==:"
+          ]
+        ],
+        "body": "{\"hello\": \"there\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884481,
+      "expect": "digest_mismatch"
+    },
+    {
+      "name": "pick-by-tag",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\", sig2=(\"@method\" \"@authority\");created=1760000000;keyid=\"test-key-ed25519\";tag=\"other\""
+          ],
+          [
+            "Signature",
+            "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:, sig2=:3faY7p1FNU3+fPdQMrecfsjYmfp88AE7XN2w68F8rReDtrX4/TV1rIBtxZCTYMc2PTRF9PN9cyW7JlaJ5YzCDw==:"
+          ]
+        ]
+      },
+      "keys": {
+        "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4": "messh",
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "tag": "custom",
+      "now": 1760000005,
+      "expect": "ok",
+      "expect_label": "sig1"
+    },
+    {
+      "name": "pick-by-label",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\", sig2=(\"@method\" \"@authority\");created=1760000000;keyid=\"test-key-ed25519\";tag=\"other\""
+          ],
+          [
+            "Signature",
+            "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:, sig2=:3faY7p1FNU3+fPdQMrecfsjYmfp88AE7XN2w68F8rReDtrX4/TV1rIBtxZCTYMc2PTRF9PN9cyW7JlaJ5YzCDw==:"
+          ]
+        ]
+      },
+      "keys": {
+        "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4": "messh",
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "label": "sig2",
+      "now": 1760000005,
+      "expect": "ok",
+      "expect_label": "sig2"
+    },
+    {
+      "name": "pick-missing-tag",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\", sig2=(\"@method\" \"@authority\");created=1760000000;keyid=\"test-key-ed25519\";tag=\"other\""
+          ],
+          [
+            "Signature",
+            "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:, sig2=:3faY7p1FNU3+fPdQMrecfsjYmfp88AE7XN2w68F8rReDtrX4/TV1rIBtxZCTYMc2PTRF9PN9cyW7JlaJ5YzCDw==:"
+          ]
+        ]
+      },
+      "keys": {
+        "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4": "messh",
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "tag": "absent",
+      "now": 1760000005,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "pick-ambiguous",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\", sig2=(\"@method\" \"@authority\");created=1760000000;keyid=\"test-key-ed25519\";tag=\"other\""
+          ],
+          [
+            "Signature",
+            "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:, sig2=:3faY7p1FNU3+fPdQMrecfsjYmfp88AE7XN2w68F8rReDtrX4/TV1rIBtxZCTYMc2PTRF9PN9cyW7JlaJ5YzCDw==:"
+          ]
+        ]
+      },
+      "keys": {
+        "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4": "messh",
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1760000005,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "expired",
+      "message": {
+        "method": "GET",
+        "url": "https://www.example.com/path?param=value\u0026foo=bar\u0026baz=batman\u0026qux=",
+        "headers": [
+          [
+            "Host",
+            "www.example.com"
+          ],
+          [
+            "Example-Dict",
+            " a=1,    b=2;x=1;y=2,   c=(a   b   c)"
+          ],
+          [
+            "Example-Header",
+            "value, with, lots"
+          ],
+          [
+            "Example-Header",
+            "of, commas"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@query-param\";name=\"baz\" \"example-dict\";key=\"b\" \"example-dict\";sf \"example-header\";bs \"@target-uri\" \"@scheme\" \"@request-target\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-fields-1\";tag=\"custom\""
+          ],
+          [
+            "Signature",
+            "sig1=:T0VsunhUBI6OXIG4I/idOqgEjP0HlvYyhcoMfleqZK5q3xgsB5KKgwnlqXx81faIYbT16PEaEf57+1iFzAr/Bg==:"
+          ]
+        ]
+      },
+      "keys": {
+        "BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4": "messh",
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "tag": "custom",
+      "now": 1760000061,
+      "expect": "clock_skew"
+    },
+    {
+      "name": "duplicate-label",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "duplicate-component",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature-Input",
+            "sig1=(\"@method\" \"@method\");created=1618884473;keyid=\"test-key-ed25519\""
+          ],
+          [
+            "Signature",
+            "sig1=:AAAA:"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "alg-not-ed25519",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ],
+          [
+            "Signature",
+            "sig-b26=:wqcAqbmYJ2ji2glfAMaRy4gruYYnx2nEFN2HN6jrnDnQCK1u02Gb04v9EDgwUPiu4A0w6vuQv5lIp5WPpBKRCw==:"
+          ],
+          [
+            "Signature-Input",
+            "sig-b26=(\"date\" \"@method\" \"@path\" \"@authority\" \"content-type\" \"content-length\");created=1618884473;keyid=\"test-key-ed25519\";alg=\"rsa-pss-sha512\""
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "bad_signature"
+    },
+    {
+      "name": "missing-signature",
+      "message": {
+        "method": "POST",
+        "url": "https://example.com/foo?param=Value\u0026Pet=dog",
+        "headers": [
+          [
+            "Host",
+            "example.com"
+          ],
+          [
+            "Date",
+            "Tue, 20 Apr 2021 02:07:55 GMT"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ],
+          [
+            "Content-Digest",
+            "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNNyealdVLvRwEmTHWXvJwew==:"
+          ],
+          [
+            "Content-Length",
+            "18"
+          ]
+        ],
+        "body": "{\"hello\": \"world\"}"
+      },
+      "keys": {
+        "test-key-ed25519": "test-key-ed25519"
+      },
+      "now": 1618884480,
+      "expect": "missing_signature"
+    }
+  ],
+  "web_bot_auth": {
+    "cases": [
+      {
+        "name": "string-agent",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-string\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:27asPdUPBM/D8blvSyvAK+6Ur13vk8MB7Qc3crtIuj89PUNsdnvHlQl8B/GhrHbHodSY9D+VXnrg/4BiuCP9Dw==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "ok",
+        "identity": "mukul"
+      },
+      {
+        "name": "dictionary-agent-by-key",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "sig1=\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\";key=\"sig1\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-dict-1\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:R3mnKkuemzYREn6HfwKSWRoc8fvlz0XPm3ulMw/M7oPwUcKZvcDGYArKvXHH+OD48/z5YKaFY7944oQhP9HODQ==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "ok",
+        "identity": "mukul"
+      },
+      {
+        "name": "dictionary-agent-by-label",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "sig1=\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-dict-label\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:voEpDkdUNzg7F9JeUe5wgJsHT90Bqzj+YZulRD3uJCIBBz1o/vi6Y8jHJhQg1yyTP8/jqDIg2vOml16ewRqEBA==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "ok",
+        "identity": "mukul"
+      },
+      {
+        "name": "dictionary-member-chosen-by-key",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "a=\"https://registry.example/bob\", b=\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\";key=\"b\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-key-b\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:+YcDYtMB3JlzFTGfHICfpwS1FmIkNWaRUdvcSQKBSJh3c6vv9Jgh+a9dnGqq2IMpuwGCIsY0E/gypMfWn9RmAw==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/bob": [
+            "second"
+          ],
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "ok",
+        "identity": "mukul"
+      },
+      {
+        "name": "dictionary-member-with-other-keys",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "a=\"https://registry.example/bob\", b=\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\";key=\"a\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-key-a\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:n4TEgApiVLLG+teh7K2yfURAb9NkmU7pSg4lOWT5aObM1wCGCZbsD17fisCX+/gTXzqUKP2dCbfI7Yohxr13Aw==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/bob": [
+            "second"
+          ],
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "unknown_key"
+      },
+      {
+        "name": "external-agent",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-external\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:I3nZVLE9HYAtCrZEcYoaNIUU8BhMxG+dh8CAGtA0qQ3jDBqkN3V0SyobOLlBk9PjdBM/kvl0z5+YjhBbLDWsCg==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "https://agent.example"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "ok",
+        "identity": "https://agent.example",
+        "external": true
+      },
+      {
+        "name": "external-agent-not-trusted",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-external\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:I3nZVLE9HYAtCrZEcYoaNIUU8BhMxG+dh8CAGtA0qQ3jDBqkN3V0SyobOLlBk9PjdBM/kvl0z5+YjhBbLDWsCg==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "untrusted"
+      },
+      {
+        "name": "external-agent-with-path",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example/bot\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-external-path\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:ZNLfRxfiEoJKn0Bql3XgyKGJY0t1GXtW6/KDAeThBuPCTjYekh95+V/i8ADI2OpKXLOWXbCBCBodtRVcSM4zAA==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "https://agent.example"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "untrusted"
+      },
+      {
+        "name": "inline-keys",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"data:application/http-message-signatures-directory;base64,eyJrZXlzIjpbeyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6IllPMW9rUmhDbG5oUm9QWlZ2QklqYm1NZ2R6T0N2ZXY0NHA3dXJuMUFkcHciLCJraWQiOiJYaGpVT1J1aGhlZ1NPZUlqeWx2RDFyRFBNOU5vVURXeG1maUQtZnlkeE5ZIn1dfQ==\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-inline\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:7gyR7LaP5Dn8nCU9KfYZVpWjJTZGiuRxnY+Z2J/Ro4aB+e7B0berH/8A4oUeYXfv2ncDznjw9Yk8ykDHcaikBQ==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "jwk:XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY"
+        ],
+        "directories": {},
+        "expect": "ok",
+        "identity": "jwk:XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY",
+        "external": true
+      },
+      {
+        "name": "inline-keys-not-trusted",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"data:application/http-message-signatures-directory;base64,eyJrZXlzIjpbeyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6IllPMW9rUmhDbG5oUm9QWlZ2QklqYm1NZ2R6T0N2ZXY0NHA3dXJuMUFkcHciLCJraWQiOiJYaGpVT1J1aGhlZ1NPZUlqeWx2RDFyRFBNOU5vVURXeG1maUQtZnlkeE5ZIn1dfQ==\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-inline\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:7gyR7LaP5Dn8nCU9KfYZVpWjJTZGiuRxnY+Z2J/Ro4aB+e7B0berH/8A4oUeYXfv2ncDznjw9Yk8ykDHcaikBQ==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {},
+        "expect": "untrusted"
+      },
+      {
+        "name": "minimal-components-default",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@authority\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-minimal\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:lHpnC7syY6GZ28sQFjlww4OoK8nMefXncz2K2BwJe/eNqKhaZxETAUxACVRKt2QlHDNTzbOWQROFU1GQORGBAA==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "https://agent.example"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "bad_signature"
+      },
+      {
+        "name": "minimal-components-allowed",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@authority\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-minimal\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:lHpnC7syY6GZ28sQFjlww4OoK8nMefXncz2K2BwJe/eNqKhaZxETAUxACVRKt2QlHDNTzbOWQROFU1GQORGBAA==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "https://agent.example"
+        ],
+        "require": [
+          "@authority",
+          "signature-agent"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "ok",
+        "identity": "https://agent.example",
+        "external": true
+      },
+      {
+        "name": "minimal-components-query-uncovered",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/items?limit=10",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://agent.example\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@authority\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"XhjUORuhhegSOeIjylvD1rDPM9NoUDWxmfiD-fydxNY\";alg=\"ed25519\";nonce=\"nonce-minimal-query\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:sKirHrUrSAH9qb3LO+7TEoU8layRaZ1GWAoqKkOVG9XhqEbxHtlAKCsIoeLMg/LnMYVt3n7hRe9ApG2xRnSFCA==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "https://agent.example"
+        ],
+        "require": [
+          "@authority",
+          "signature-agent"
+        ],
+        "directories": {
+          "https://agent.example": [
+            "second"
+          ]
+        },
+        "expect": "bad_signature"
+      },
+      {
+        "name": "target-uri-covers-authority-path-query",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/items?limit=10",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@target-uri\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-target-uri\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:yiU5LgauK4skXNWi53JGIksQELuKGOEaHaSrYP2/WM8LeP8SCtLRL7i0ylJNnoSgm76dXtrxE7LIKmjF0DOMDQ==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "ok",
+        "identity": "mukul"
+      },
+      {
+        "name": "duplicate-label",
+        "message": {
+          "method": "GET",
+          "url": "https://app.example/api/hello",
+          "headers": [
+            [
+              "Signature-Agent",
+              "\"https://registry.example/mukul\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-string\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature-Input",
+              "sig1=(\"@method\" \"@authority\" \"@path\" \"signature-agent\");created=1760000000;expires=1760000060;keyid=\"BEGCMYMPzN8Mc2ySSaLpu4-OMur8oB-mMSK7yU555R4\";alg=\"ed25519\";nonce=\"nonce-string\";tag=\"web-bot-auth\""
+            ],
+            [
+              "Signature",
+              "sig1=:27asPdUPBM/D8blvSyvAK+6Ur13vk8MB7Qc3crtIuj89PUNsdnvHlQl8B/GhrHbHodSY9D+VXnrg/4BiuCP9Dw==:"
+            ],
+            [
+              "Signature",
+              "sig1=:27asPdUPBM/D8blvSyvAK+6Ur13vk8MB7Qc3crtIuj89PUNsdnvHlQl8B/GhrHbHodSY9D+VXnrg/4BiuCP9Dw==:"
+            ]
+          ]
+        },
+        "now": 1760000005,
+        "trust": [
+          "*"
+        ],
+        "directories": {
+          "https://registry.example/mukul": [
+            "messh"
+          ]
+        },
+        "expect": "bad_signature"
+      }
+    ],
+    "notes": "Build a verifier with the trust list, the registry, required components when given, the clock at now, and a directory resolver that answers from directories (agent URL → key names). Inline keys need no resolver.",
+    "registry": "https://registry.example"
+  }
+}

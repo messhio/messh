@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.messh</groupId>
   <artifactId>messh-sdk</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <packaging>jar</packaging>
   <name>messh SDK</name>
   <description>Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)</description>

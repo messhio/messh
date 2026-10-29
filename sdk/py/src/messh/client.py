@@ -11,14 +11,16 @@ import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
-from typing import Callable, Dict, Mapping, Optional, Union
+from typing import Callable, Dict, List, Mapping, Optional, Sequence, Tuple, Union
 from urllib.parse import urlsplit
 
-from . import _wba
+from . import _sf, _wba
 from .errors import MesshError
+from .httpsig import Message, sign_message
 from .keys import KeySource, key_env, key_file, resolve
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
+DIRECTORY_TAG = "http-message-signatures-directory"  # tags the signatures on a key directory response
 DEFAULT_REGISTRY = "https://messh.io"
 _IDENTITY = re.compile(r"^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$")
 
@@ -68,13 +70,30 @@ class Client:
         timeout: float = 30.0,
         clock: Optional[Callable[[], float]] = None,
         nonce: Optional[Callable[[], str]] = None,
+        components: Sequence[str] = (),
+        label: str = _wba.LABEL,
+        tag: str = _wba.TAG,
+        agent_dictionary: bool = False,
     ):
+        """``components`` covers more than the defaults, after them ("content-type",
+        "@target-uri", '"@query-param";name="id"'; header values come from
+        ``sign(headers=...)``). ``label`` and ``tag`` default to sig1 and
+        web-bot-auth (with another tag it isn't a Web Bot Auth signature).
+        ``agent_dictionary`` sends Signature-Agent in the dictionary form of
+        newer drafts (sig1="https://messh.io/mukul", covered as
+        "signature-agent";key="sig1"); the default string form is what messh
+        verifiers before 0.2.0 require."""
         if not _IDENTITY.match(identity or ""):
             raise MesshError("invalid_identity", "%r is not a messh username" % identity)
         if not registry.startswith(("https://", "http://")):
             raise MesshError("invalid_option", "registry must be an http(s) URL")
         if not 1 <= expires_in <= _wba.MAX_LIFETIME:
             raise MesshError("invalid_option", "expires_in must be 1..300 seconds")
+        if not _sf.valid_key(label):
+            raise MesshError("invalid_option", "a label is lowercase letters, digits and _-.*, starting with a letter")
+        if not tag or not _sf.valid_string(tag):
+            raise MesshError("invalid_option", "a tag is printable ASCII")
+        self.label, self.tag, self.components, self.agent_dictionary = label, tag, list(components), agent_dictionary
         self.identity = identity
         self.registry = registry.rstrip("/")
         self.expires_in = expires_in
@@ -144,36 +163,38 @@ class Client:
         raise MesshError("not_published", "this key (%s) isn't an active key of %s; publish it with messh publish --key <key>.pub --name <name>"
                          % (self.fingerprint, self.agent))
 
-    def sign(self, method: str, url: str, body: Union[bytes, str, None] = None, host: Optional[str] = None) -> Dict[str, str]:
+    def sign(self, method: str, url: str, body: Union[bytes, str, None] = None, host: Optional[str] = None,
+             headers: Optional[Mapping[str, str]] = None) -> Dict[str, str]:
         """Return the headers to add: Signature-Agent, Signature-Input,
         Signature and, with a body, Content-Digest. ``host`` overrides the
-        authority if you send a different Host header than the URL's."""
+        authority if you send a different Host header than the URL's;
+        ``headers`` gives the values of extra covered fields."""
         u = urlsplit(url)
         if not u.scheme or not u.netloc:
             raise MesshError("sign_failed", "url must be absolute")
-        agent_header = _wba.quote(self.agent)
-        comps = [
-            ("@method", method.upper()),
-            ("@authority", (host or u.netloc).lower()),
-            ("@path", u.path or "/"),
-        ]
+        agent = _sf.serialize_bare(("str", self.agent))
+        out: Dict[str, str] = {"Signature-Agent": "%s=%s" % (self.label, agent) if self.agent_dictionary else agent}
+        comps = ["@method", "@authority", "@path"]
         if u.query:
-            comps.append(("@query", "?" + u.query))
-        headers: Dict[str, str] = {"Signature-Agent": agent_header}
+            comps.append("@query")
         if body:
             data = body.encode() if isinstance(body, str) else body
-            headers["Content-Digest"] = _wba.content_digest(data)
-            comps.append(("content-digest", headers["Content-Digest"]))
-        comps.append(("signature-agent", agent_header))
+            out["Content-Digest"] = _wba.content_digest(data)
+            comps.append("content-digest")
+        comps += self.components
+        comps.append('"signature-agent";key="%s"' % self.label if self.agent_dictionary else "signature-agent")
+        own = {"signature-agent", "content-digest", "signature-input", "signature"} | ({"host"} if host else set())
+        fields: List[Tuple[str, str]] = [(k, v) for k, v in (headers or {}).items() if k.lower() not in own]
+        fields += list(out.items()) + ([("Host", host)] if host else [])
         created = int(self._clock())
-        params = _wba.params([c for c, _ in comps], created, created + self.expires_in, self.key_id, self._nonce())
         try:
-            sig = self._signer.sign(_wba.base(comps, params))
+            signed = sign_message(Message(method.upper(), url, headers=fields), self._signer, components=comps, label=self.label,
+                                  created=created, expires=created + self.expires_in, keyid=self.key_id, alg="ed25519",
+                                  nonce=self._nonce(), tag=self.tag)
         except Exception as e:
             raise MesshError("sign_failed", str(e)) from e
-        headers["Signature-Input"] = "%s=%s" % (_wba.LABEL, params)
-        headers["Signature"] = "%s=:%s:" % (_wba.LABEL, base64.b64encode(sig).decode())
-        return headers
+        out.update(signed.headers)
+        return out
 
     def request(
         self,
@@ -190,7 +211,7 @@ class Client:
             data = _json.dumps(json, separators=(",", ":"))
             hdrs.setdefault("Content-Type", "application/json")
         body = data.encode() if isinstance(data, str) else data
-        hdrs.update(self.sign(method, url, body))
+        hdrs.update(self.sign(method, url, body, headers=hdrs))
         hdrs.setdefault("User-Agent", "messh-python/" + __version__)
         req = urllib.request.Request(url, data=body, headers=hdrs, method=method.upper())
         try:
@@ -206,6 +227,34 @@ class Client:
         return self.request("POST", url, **kw)
 
 
+@dataclass(frozen=True)
+class DirectoryResponse:
+    body: bytes               # the JWKS to serve
+    headers: Dict[str, str]   # Content-Type, Content-Digest, Signature-Input, Signature
+
+
+def directory_response(authority: str, keys: Sequence[KeySource], created: Optional[int] = None, expires_in: int = 300) -> DirectoryResponse:
+    """A key directory for keys, to serve yourself at
+    https://<authority>/.well-known/http-message-signatures-directory, and the
+    headers that sign it: Content-Digest, and one signature per key binding the
+    directory to authority (draft-meunier-http-message-signatures-directory §5),
+    the form Cloudflare's tools check. Build it again before it expires."""
+    created = int(time.time() if created is None else created)
+    signers = [resolve(k) for k in keys]
+    pubs = [s.public_key() for s in signers]
+    jwks = ['{"kty":"OKP","crv":"Ed25519","x":"%s","kid":"%s"}' % (_wba.b64url(p), _wba.thumbprint(p)) for p in pubs]
+    body = ('{"keys":[%s]}' % ",".join(jwks)).encode()
+    headers = {"Content-Type": "application/http-message-signatures-directory+json", "Content-Digest": _wba.content_digest(body)}
+    resp = Message(status=200, headers={"Content-Digest": headers["Content-Digest"]},
+                   request=Message("GET", "https://%s%s" % (authority, _wba.DIRECTORY_PATH)))
+    signed = [sign_message(resp, s, components=['"@authority";req', "content-digest"], label="binding%d" % i, created=created,
+                           expires=created + expires_in, keyid=_wba.thumbprint(p), alg="ed25519", tag=DIRECTORY_TAG)
+              for i, (s, p) in enumerate(zip(signers, pubs))]
+    headers["Signature-Input"] = ", ".join(x.headers["Signature-Input"] for x in signed)
+    headers["Signature"] = ", ".join(x.headers["Signature"] for x in signed)
+    return DirectoryResponse(body, headers)
+
+
 def _httpx_auth():
     import httpx
 
@@ -219,7 +268,7 @@ def _httpx_auth():
 
         def auth_flow(self, request):
             host = request.headers.get("host")
-            for k, v in self.client.sign(request.method, str(request.url), request.content or None, host).items():
+            for k, v in self.client.sign(request.method, str(request.url), request.content or None, host, dict(request.headers)).items():
                 request.headers[k] = v
             yield request
 

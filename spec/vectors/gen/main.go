@@ -146,6 +146,7 @@ func main() {
 	}
 	b, _ := json.MarshalIndent(doc, "", "  ")
 	must(os.WriteFile(filepath.Join(out, "web-bot-auth.json"), append(b, '\n'), 0o644))
+	writeHTTPSig(out, seed[:])
 }
 
 type zero struct{}

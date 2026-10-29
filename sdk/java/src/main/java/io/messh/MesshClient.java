@@ -1,5 +1,8 @@
 package io.messh;
 
+import io.messh.httpsig.HttpMessage;
+import io.messh.httpsig.HttpSig;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -32,7 +35,7 @@ import java.util.regex.Pattern;
  * }</pre>
  */
 public final class MesshClient {
-  public static final String VERSION = "0.1.0";
+  public static final String VERSION = "0.2.0";
   public static final String DEFAULT_REGISTRY = "https://messh.io";
   private static final Pattern IDENTITY = Pattern.compile("^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$");
   private static final SecureRandom RANDOM = new SecureRandom();
@@ -45,6 +48,10 @@ public final class MesshClient {
   private final HttpClient http;
   private final LongSupplier clock;
   private final Supplier<String> nonce;
+  private final String label;
+  private final String tag;
+  private final List<String> components;
+  private final boolean agentDictionary;
 
   private MesshClient(Builder b, Signer signer) {
     this.identity = b.identity;
@@ -55,6 +62,10 @@ public final class MesshClient {
     this.http = b.http != null ? b.http : HttpClient.newHttpClient();
     this.clock = b.clock != null ? b.clock : () -> System.currentTimeMillis() / 1000;
     this.nonce = b.nonce != null ? b.nonce : MesshClient::randomNonce;
+    this.label = b.label;
+    this.tag = b.tag;
+    this.components = List.copyOf(b.components);
+    this.agentDictionary = b.agentDictionary;
   }
 
   /** Start building a client for identity, a messh username such as "mukul". */
@@ -170,34 +181,44 @@ public final class MesshClient {
    * different Host header. Sign last; don't change the request afterwards.
    */
   public Map<String, String> sign(String method, URI uri, byte[] body, String host) {
+    return sign(method, uri, body, host, Map.of());
+  }
+
+  /**
+   * Like {@link #sign(String, URI, byte[], String)}, with the request's headers, for covered
+   * components beyond the defaults.
+   */
+  public Map<String, String> sign(String method, URI uri, byte[] body, String host, Map<String, String> requestHeaders) {
     if (uri.getRawAuthority() == null) throw new MesshException("sign_failed", "uri must be absolute");
-    String agentHeader = Wba.quote(agent());
-    List<String[]> comps = new ArrayList<>();
-    comps.add(new String[] {"@method", method.toUpperCase(Locale.ROOT)});
-    comps.add(new String[] {"@authority", (host != null ? host : uri.getRawAuthority()).toLowerCase(Locale.ROOT)});
-    String path = uri.getRawPath();
-    comps.add(new String[] {"@path", path == null || path.isEmpty() ? "/" : path});
-    if (uri.getRawQuery() != null && !uri.getRawQuery().isEmpty()) comps.add(new String[] {"@query", "?" + uri.getRawQuery()});
+    String agentValue = "\"" + agent().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
     Map<String, String> headers = new LinkedHashMap<>();
-    headers.put("Signature-Agent", agentHeader);
+    headers.put("Signature-Agent", agentDictionary ? label + "=" + agentValue : agentValue);
+    List<String> comps = new ArrayList<>(List.of("@method", "@authority", "@path"));
+    if (uri.getRawQuery() != null && !uri.getRawQuery().isEmpty()) comps.add("@query");
     if (body != null && body.length > 0) {
-      String d = Wba.contentDigest(body);
-      headers.put("Content-Digest", d);
-      comps.add(new String[] {"content-digest", d});
+      headers.put("Content-Digest", Wba.contentDigest(body));
+      comps.add("content-digest");
     }
-    comps.add(new String[] {"signature-agent", agentHeader});
-    List<String> names = new ArrayList<>();
-    for (String[] c : comps) names.add(c[0]);
+    comps.addAll(components);
+    comps.add(agentDictionary ? "\"signature-agent\";key=\"" + label + "\"" : "signature-agent");
+    List<String> own = List.of("signature-agent", "content-digest", "signature-input", "signature");
+    Map<String, List<String>> fields = new LinkedHashMap<>();
+    requestHeaders.forEach((k, v) -> {
+      String n = k.toLowerCase(Locale.ROOT);
+      if (!own.contains(n) && !(host != null && n.equals("host"))) fields.computeIfAbsent(n, x -> new ArrayList<>()).add(v);
+    });
+    headers.forEach((k, v) -> fields.put(k.toLowerCase(Locale.ROOT), List.of(v)));
+    if (host != null) fields.put("host", List.of(host));
     long created = clock.getAsLong();
-    String params = Wba.params(names, created, created + expiresIn, keyId, nonce.get());
-    byte[] sig;
+    HttpSig.Signed signed;
     try {
-      sig = signer.sign(Wba.base(comps, params));
+      signed = HttpSig.sign(HttpMessage.request(method.toUpperCase(Locale.ROOT), uri.toString(), fields, null), signer,
+          HttpSig.SignOptions.of().components(comps).label(label).created(created).expires(created + expiresIn).keyid(keyId)
+              .alg("ed25519").nonce(nonce.get()).tag(tag));
     } catch (RuntimeException e) {
       throw new MesshException("sign_failed", String.valueOf(e.getMessage()));
     }
-    headers.put("Signature-Input", Wba.LABEL + "=" + params);
-    headers.put("Signature", Wba.LABEL + "=:" + Base64.getEncoder().encodeToString(sig) + ":");
+    headers.putAll(signed.headers());
     return headers;
   }
 
@@ -231,6 +252,10 @@ public final class MesshClient {
     private HttpClient http;
     private LongSupplier clock;
     private Supplier<String> nonce;
+    private String label = Wba.LABEL;
+    private String tag = Wba.TAG;
+    private final List<String> components = new ArrayList<>();
+    private boolean agentDictionary;
 
     private Builder(String identity) {
       this.identity = identity;
@@ -272,7 +297,40 @@ public final class MesshClient {
       return this;
     }
 
+    /**
+     * Cover more components than the defaults, after them: "content-type", "@target-uri",
+     * "\"@query-param\";name=\"id\"". Header values come from {@link MesshClient#sign(String, URI, byte[], String, Map)}.
+     */
+    public Builder components(String... c) {
+      components.addAll(List.of(c));
+      return this;
+    }
+
+    /** Signature label. Default "sig1". */
+    public Builder label(String l) {
+      label = l;
+      return this;
+    }
+
+    /** Signature tag. Default "web-bot-auth"; with any other tag it isn't a Web Bot Auth signature. */
+    public Builder tag(String t) {
+      tag = t;
+      return this;
+    }
+
+    /**
+     * Send Signature-Agent in the dictionary form of newer drafts, keyed by the label
+     * (sig1="https://messh.io/mukul"), covered as "signature-agent";key="sig1". The default string
+     * form is what messh verifiers before 0.2.0 require.
+     */
+    public Builder agentDictionary(boolean on) {
+      agentDictionary = on;
+      return this;
+    }
+
     public MesshClient build() {
+      if (label == null || !label.matches("[a-z*][a-z0-9_\\-.*]*")) throw new MesshException("invalid_option", "a label is lowercase letters, digits and _-.*, starting with a letter");
+      if (tag == null || tag.isEmpty() || !tag.chars().allMatch(ch -> ch >= 0x20 && ch <= 0x7e)) throw new MesshException("invalid_option", "a tag is printable ASCII");
       if (identity == null || !IDENTITY.matcher(identity).matches()) throw new MesshException("invalid_identity", identity + " is not a messh username");
       if (!registry.startsWith("https://") && !registry.startsWith("http://")) throw new MesshException("invalid_option", "registry must be an http(s) URL");
       long s = expiresIn.getSeconds();

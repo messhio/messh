@@ -1,6 +1,6 @@
 {
   "name": "@messh/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)",
   "license": "Apache-2.0",
   "author": "Mukul Lohar",
@@ -33,6 +33,10 @@
     "./verify": {
       "types": "./dist/verify.d.ts",
       "import": "./dist/verify.js"
+    },
+    "./httpsig": {
+      "types": "./dist/httpsig.d.ts",
+      "import": "./dist/httpsig.js"
     }
   },
   "files": [

@@ -1,6 +1,6 @@
 # messh CLI and SDKs. Everything runs in Docker.
 # Compared byte for byte; go test checks test_ed25519, whose OpenSSH encoding has random check bytes.
-VECTORS := test_ed25519.pub test_ed25519.pkcs8.pem web-bot-auth.json
+VECTORS := test_ed25519.pub test_ed25519.pkcs8.pem web-bot-auth.json http-message-signatures.json
 
 test: test-cli test-sdk vectors
 

@@ -10,21 +10,26 @@
 //! # Ok::<(), messh::Error>(())
 //! ```
 //!
-//! Verify incoming requests with [`verify::Verifier`].
+//! Verify incoming requests with [`verify::Verifier`]. Sign or verify any HTTP
+//! message signature (RFC 9421) with [`httpsig`].
 
+pub mod httpsig;
 mod keys;
+mod sf;
 pub mod verify;
 pub mod wba;
 
 pub use keys::{KeySource, Signer};
 
-use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const DEFAULT_REGISTRY: &str = "https://messh.io";
+/// Tags the signatures on a key directory response.
+pub const DIRECTORY_TAG: &str = "http-message-signatures-directory";
 
 /// Client-side error. `code()`: invalid_identity, invalid_key, invalid_option, sign_failed,
 /// send_failed; from `whoami()`: not_published, registry_unreachable.
@@ -77,9 +82,50 @@ pub struct ClientBuilder {
     expires_in: Duration,
     clock: Option<Clock>,
     nonce: Option<NonceFn>,
+    profile: Profile,
+}
+
+/// What a client signs beyond the defaults (all optional).
+#[derive(Clone, Debug)]
+struct Profile {
+    label: String,
+    tag: String,
+    components: Vec<String>,
+    agent_dictionary: bool,
 }
 
 impl ClientBuilder {
+    /// Cover more components than the defaults, after them: `content-type`,
+    /// `@target-uri`, `"@query-param";name="id"`. Header values come from
+    /// [`Client::sign_with_headers`].
+    pub fn components<I, S>(mut self, components: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        self.profile
+            .components
+            .extend(components.into_iter().map(Into::into));
+        self
+    }
+    /// Signature label. Default "sig1".
+    pub fn label(mut self, label: impl Into<String>) -> Self {
+        self.profile.label = label.into();
+        self
+    }
+    /// Signature tag. Default "web-bot-auth"; with any other tag it isn't a Web Bot Auth signature.
+    pub fn tag(mut self, tag: impl Into<String>) -> Self {
+        self.profile.tag = tag.into();
+        self
+    }
+    /// Send Signature-Agent in the dictionary form of newer drafts, keyed by the
+    /// label (`sig1="https://messh.io/mukul"`), covered as
+    /// `"signature-agent";key="sig1"`. The default string form is what messh
+    /// verifiers before 0.2.0 require.
+    pub fn agent_dictionary(mut self, on: bool) -> Self {
+        self.profile.agent_dictionary = on;
+        self
+    }
     /// Signing key. Default: `KeySource::File("~/.ssh/id_ed25519")`.
     pub fn key(mut self, key: KeySource) -> Self {
         self.key = Some(key);
@@ -126,6 +172,15 @@ impl ClientBuilder {
                 "expires_in must be 1..300 seconds",
             ));
         }
+        if !sf::valid_key(&self.profile.label) {
+            return Err(Error::new(
+                "invalid_option",
+                "a label is lowercase letters, digits and _-.*, starting with a letter",
+            ));
+        }
+        if self.profile.tag.is_empty() || !sf::valid_string(&self.profile.tag) {
+            return Err(Error::new("invalid_option", "a tag is printable ASCII"));
+        }
         let key = self
             .key
             .unwrap_or_else(|| KeySource::File("~/.ssh/id_ed25519".into()));
@@ -146,6 +201,7 @@ impl ClientBuilder {
                 })
             }),
             nonce: self.nonce.unwrap_or_else(|| Arc::new(random_nonce)),
+            profile: self.profile,
         })
     }
 }
@@ -181,6 +237,7 @@ pub struct Client {
     expires_in: i64,
     clock: Clock,
     nonce: NonceFn,
+    profile: Profile,
 }
 
 impl std::fmt::Debug for Client {
@@ -202,6 +259,12 @@ impl Client {
             expires_in: Duration::from_secs(60),
             clock: None,
             nonce: None,
+            profile: Profile {
+                label: wba::LABEL.into(),
+                tag: wba::TAG.into(),
+                components: Vec::new(),
+                agent_dictionary: false,
+            },
         }
     }
 
@@ -347,48 +410,87 @@ impl Client {
         body: Option<&[u8]>,
         host: Option<&str>,
     ) -> Result<Vec<(String, String)>, Error> {
-        let (_, authority, path, query) =
+        self.sign_with_headers(method, url, body, host, &[])
+    }
+
+    /// Like [`sign_with_host`](Self::sign_with_host), with the request's
+    /// headers, for covered components beyond the defaults.
+    pub fn sign_with_headers(
+        &self,
+        method: &str,
+        url: &str,
+        body: Option<&[u8]>,
+        host: Option<&str>,
+        request_headers: &[(String, String)],
+    ) -> Result<Vec<(String, String)>, Error> {
+        let (_, _, _, query) =
             wba::split_url(url).ok_or_else(|| Error::new("sign_failed", "url must be absolute"))?;
-        let agent_header = wba::quote(&self.agent());
-        let mut comps = vec![
-            ("@method".to_string(), method.to_ascii_uppercase()),
-            (
-                "@authority".to_string(),
-                host.unwrap_or(&authority).to_ascii_lowercase(),
-            ),
-            ("@path".to_string(), path),
-        ];
+        let p = &self.profile;
+        let agent = sf::Bare::Str(self.agent()).ser();
+        let mut headers = vec![(
+            "Signature-Agent".to_string(),
+            if p.agent_dictionary {
+                format!("{}={agent}", p.label)
+            } else {
+                agent
+            },
+        )];
+        let mut comps: Vec<String> = vec!["@method".into(), "@authority".into(), "@path".into()];
         if !query.is_empty() {
-            comps.push(("@query".to_string(), format!("?{query}")));
+            comps.push("@query".into());
         }
-        let mut headers = vec![("Signature-Agent".to_string(), agent_header.clone())];
         if let Some(b) = body.filter(|b| !b.is_empty()) {
-            let d = wba::content_digest(b);
-            headers.push(("Content-Digest".to_string(), d.clone()));
-            comps.push(("content-digest".to_string(), d));
+            headers.push(("Content-Digest".to_string(), wba::content_digest(b)));
+            comps.push("content-digest".into());
         }
-        comps.push(("signature-agent".to_string(), agent_header));
-        let names: Vec<&str> = comps.iter().map(|(n, _)| n.as_str()).collect();
+        comps.extend(p.components.iter().cloned());
+        comps.push(if p.agent_dictionary {
+            format!("\"signature-agent\";key=\"{}\"", p.label)
+        } else {
+            "signature-agent".into()
+        });
+        let own = [
+            "signature-agent",
+            "content-digest",
+            "signature-input",
+            "signature",
+        ];
+        let mut fields: Vec<(String, String)> = request_headers
+            .iter()
+            .filter(|(k, _)| {
+                let k = k.to_ascii_lowercase();
+                !own.contains(&k.as_str()) && !(host.is_some() && k == "host")
+            })
+            .cloned()
+            .collect();
+        fields.extend(headers.iter().cloned());
+        if let Some(h) = host {
+            fields.push(("Host".into(), h.to_string()));
+        }
         let created = (self.clock)();
-        let params = wba::params(
-            &names,
-            created,
-            created + self.expires_in,
-            &self.key_id,
-            &(self.nonce)(),
-        );
-        let sig = self
-            .signer
-            .sign(&wba::base(&comps, &params))
-            .map_err(|e| Error::new("sign_failed", e))?;
-        headers.push((
-            "Signature-Input".to_string(),
-            format!("{}={}", wba::LABEL, params),
-        ));
-        headers.push((
-            "Signature".to_string(),
-            format!("{}=:{}:", wba::LABEL, STANDARD.encode(sig)),
-        ));
+        let msg = httpsig::Message {
+            method: method.to_ascii_uppercase(),
+            url: url.to_string(),
+            headers: fields,
+            ..Default::default()
+        };
+        let signed = httpsig::sign_message(
+            &msg,
+            self.signer.as_ref(),
+            &httpsig::SignOptions {
+                label: p.label.clone(),
+                components: comps,
+                created: Some(created),
+                expires: Some(created + self.expires_in),
+                keyid: Some(self.key_id.clone()),
+                alg: Some("ed25519".into()),
+                nonce: Some((self.nonce)()),
+                tag: Some(p.tag.clone()),
+                ..Default::default()
+            },
+        )
+        .map_err(|e| Error::new("sign_failed", e))?;
+        headers.extend(signed.headers());
         Ok(headers)
     }
 
@@ -442,4 +544,83 @@ impl Client {
             .map_err(|e| Error::new("send_failed", e.to_string()))?;
         Ok((status, out))
     }
+}
+
+/// A key directory to serve, and the headers that sign it. See [`directory_response`].
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct DirectoryResponse {
+    /// The JWKS to serve.
+    pub body: Vec<u8>,
+    /// Content-Type, Content-Digest, Signature-Input and Signature.
+    pub headers: Vec<(String, String)>,
+}
+
+/// A key directory for `keys`, to serve yourself at
+/// `https://<authority>/.well-known/http-message-signatures-directory`, and the
+/// headers that sign it: Content-Digest, and one signature per key binding the
+/// directory to `authority` (draft-meunier-http-message-signatures-directory
+/// §5), the form Cloudflare's tools check. Build it again before it expires.
+pub fn directory_response(
+    authority: &str,
+    keys: &[KeySource],
+    created: i64,
+    ttl: Duration,
+) -> Result<DirectoryResponse, Error> {
+    let signers = keys
+        .iter()
+        .map(KeySource::load)
+        .collect::<Result<Vec<_>, _>>()?;
+    let jwks: Vec<String> = signers
+        .iter()
+        .map(|s| {
+            let p = s.public_key();
+            format!(
+                r#"{{"kty":"OKP","crv":"Ed25519","x":"{}","kid":"{}"}}"#,
+                URL_SAFE_NO_PAD.encode(p),
+                wba::thumbprint(&p)
+            )
+        })
+        .collect();
+    let body = format!(r#"{{"keys":[{}]}}"#, jwks.join(",")).into_bytes();
+    let digest = wba::content_digest(&body);
+    let resp = httpsig::Message {
+        status: 200,
+        headers: vec![("Content-Digest".into(), digest.clone())],
+        request: Some(Box::new(httpsig::Message {
+            method: "GET".into(),
+            url: format!("https://{authority}{}", wba::DIRECTORY_PATH),
+            ..Default::default()
+        })),
+        ..Default::default()
+    };
+    let (mut inputs, mut sigs) = (Vec::new(), Vec::new());
+    for (i, s) in signers.iter().enumerate() {
+        let signed = httpsig::sign_message(
+            &resp,
+            s.as_ref(),
+            &httpsig::SignOptions {
+                label: format!("binding{i}"),
+                components: vec![r#""@authority";req"#.into(), "content-digest".into()],
+                created: Some(created),
+                expires: Some(created + ttl.as_secs() as i64),
+                keyid: Some(wba::thumbprint(&s.public_key())),
+                alg: Some("ed25519".into()),
+                tag: Some(DIRECTORY_TAG.into()),
+                ..Default::default()
+            },
+        )
+        .map_err(|e| Error::new("sign_failed", e))?;
+        inputs.push(format!("{}={}", signed.label, signed.input));
+        sigs.push(format!("{}={}", signed.label, signed.signature));
+    }
+    let headers = vec![
+        (
+            "Content-Type".into(),
+            "application/http-message-signatures-directory+json".into(),
+        ),
+        ("Content-Digest".into(), digest),
+        ("Signature-Input".into(), inputs.join(", ")),
+        ("Signature".into(), sigs.join(", ")),
+    ];
+    Ok(DirectoryResponse { body, headers })
 }

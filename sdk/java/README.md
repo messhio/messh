@@ -35,6 +35,25 @@ Agent agent = verifier.verify(method, uri, headers, body);   // throws VerifyExc
 // JDK HttpServer: server.createContext("/api", h).getFilters().add(new MesshHttpFilter(verifier));
 ```
 
+## New in 0.2.0
+
+Any HTTP message signature (RFC 9421), not only Web Bot Auth:
+
+```java
+HttpSig.Signed s = HttpSig.sign(HttpMessage.request("POST", url, headers, body), signer,
+    HttpSig.SignOptions.of("@method", "@authority", "content-digest").keyid("k1").tag("my-app"));
+HttpSig.Verified v = HttpSig.verify(signed, HttpSig.VerifyOptions.keys(kid -> publicKeys.get(kid)).tag("my-app"));
+```
+
+Other Web Bot Auth agents, and agents that sign less, alongside messh identities:
+
+```java
+MesshVerifier.builder().trust("mukul", "https://agent.example").requireComponents("@authority", "signature-agent").build();
+```
+
+Clients: `.agentDictionary(true)`, `.components(...)`, `.label(...)`, `.tag(...)`. Self-hosted key directories:
+`Directories.response(...)`. The full list is in [CHANGELOG.md](https://github.com/messhio/messh/blob/main/sdk/CHANGELOG.md).
+
 Full reference (every function, input and error code): https://github.com/messhio/messh/blob/main/sdk/README.md
 
 License: Apache-2.0

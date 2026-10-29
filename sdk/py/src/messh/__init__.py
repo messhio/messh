@@ -11,12 +11,12 @@ Server side::
     from messh.verify import Verifier, MesshAuthMiddleware
 """
 
-from .client import DEFAULT_REGISTRY, Client, PublishedKey, Response, __version__
+from .client import DEFAULT_REGISTRY, DIRECTORY_TAG, Client, DirectoryResponse, PublishedKey, Response, __version__, directory_response
 from .errors import MesshError, VerifyError
 from .keys import Signer, key_env, key_file, key_seed, ssh_agent
 
 __all__ = ["Client", "PublishedKey", "Response", "MesshError", "VerifyError", "Signer", "key_file", "key_env", "key_seed",
-           "ssh_agent", "DEFAULT_REGISTRY", "MesshAuth", "__version__"]
+           "ssh_agent", "DEFAULT_REGISTRY", "MesshAuth", "__version__", "directory_response", "DirectoryResponse", "DIRECTORY_TAG"]
 
 
 def __getattr__(name):

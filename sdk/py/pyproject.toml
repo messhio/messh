@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # Distribution name on PyPI; the import name is `messh` (`messh` on PyPI is taken).
 name = "messh-sdk"
-version = "0.1.0"
+version = "0.2.0"
 description = "Sign and verify HTTP requests as a messh identity (Web Bot Auth, RFC 9421, Ed25519)"
 readme = "README.md"
 requires-python = ">=3.9"

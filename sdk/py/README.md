@@ -45,6 +45,27 @@ def deploy(agent: Agent = Depends(current_agent)):
 
 Without a framework: `Verifier(trust=["mukul"]).verify(method, url, headers, body)`.
 
+## New in 0.2.0
+
+Any HTTP message signature (RFC 9421), not only Web Bot Auth:
+
+```python
+from messh.httpsig import Message, sign_message, verify_message
+
+m = Message("POST", "https://example.com/foo", headers=[("Content-Digest", digest)], body=body)
+s = sign_message(m, signer, components=["@method", "@authority", "content-digest"], keyid="k1", tag="my-app")
+verify_message(signed, keys={"k1": public_key}, tag="my-app")
+```
+
+Other Web Bot Auth agents, and agents that sign less, alongside messh identities:
+
+```python
+Verifier(trust=["mukul", "https://agent.example"], require_components=["@authority", "signature-agent"])
+```
+
+Clients: `Client(..., agent_dictionary=True, components=[...], label=..., tag=...)`. Self-hosted key directories:
+`messh.directory_response(...)`. The full list is in [CHANGELOG.md](https://github.com/messhio/messh/blob/main/sdk/CHANGELOG.md).
+
 Full reference (every function, input and error code): https://github.com/messhio/messh/blob/main/sdk/README.md
 
 License: Apache-2.0
